@@ -1,0 +1,60 @@
+import axios from 'axios'
+
+const TOKEN_KEY = 'studyai_token'
+
+// Token lives in memory for fast access and in localStorage to survive reloads.
+let accessToken = localStorage.getItem(TOKEN_KEY)
+let onUnauthorized = () => {}
+
+export function setToken(token) {
+  accessToken = token
+  if (token) localStorage.setItem(TOKEN_KEY, token)
+  else localStorage.removeItem(TOKEN_KEY)
+}
+
+export function getToken() {
+  return accessToken
+}
+
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler
+}
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+})
+
+api.interceptors.request.use((config) => {
+  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`
+  return config
+})
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const isAuthCall = error.config?.url?.startsWith('/auth/login') || error.config?.url?.startsWith('/auth/register')
+    if (error.response?.status === 401 && !isAuthCall && accessToken) {
+      onUnauthorized()
+    }
+    return Promise.reject(error)
+  },
+)
+
+/** Turn an axios error into a human-readable message. */
+export function errorMessage(error, fallback = 'Something went wrong. Please try again.') {
+  if (!error?.response) return 'Cannot reach the server. Is the backend running?'
+  const detail = error.response.data?.detail
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail) && detail.length) {
+    return detail
+      .map((d) => {
+        const field = d.loc?.filter((p) => p !== 'body').join('.')
+        const msg = d.msg?.replace(/^Value error, /, '')
+        return field ? `${field}: ${msg}` : msg
+      })
+      .join('; ')
+  }
+  return fallback
+}
+
+export default api
