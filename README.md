@@ -2,7 +2,7 @@
 
 Full-stack app: FastAPI + SQLAlchemy backend, React (Vite) frontend, Google Gemini for AI study plans.
 
-> **Status:** Phase 1 (backend) and Phase 2 (frontend core) complete. AI plan generation comes in Phase 3.
+> **Status:** Phases 1–3 complete: backend, frontend core, and AI study plan generation.
 
 ## Project layout
 
@@ -36,8 +36,8 @@ uvicorn app.main:app --reload # http://localhost:8000  (API docs at /docs)
 | `JWT_SECRET` | Secret used to sign access tokens. Generate: `python -c "import secrets; print(secrets.token_hex(32))"` |
 | `JWT_EXPIRE_MINUTES` | Token lifetime in minutes (default 1440). |
 | `CORS_ORIGINS` | Comma-separated allowed frontend origins (default `http://localhost:5173`). |
-| `GEMINI_API_KEY` | Google Gemini API key (Phase 3). |
-| `GEMINI_MODEL` | Gemini model name (Phase 3) — not hardcoded. |
+| `GEMINI_API_KEY` | Google Gemini API key (from Google AI Studio). Without it, AI plan generation returns a clear "not configured" error; everything else works. |
+| `GEMINI_MODEL` | Gemini model name to use (read from env, never hardcoded). |
 
 ### Seed data
 
@@ -97,3 +97,21 @@ All endpoints except `/auth/register`, `/auth/login` and `/health` require `Auth
 | `GET /tasks?date=YYYY-MM-DD`, `POST /tasks`, `PATCH /tasks/{id}/status`, `DELETE /tasks/{id}` | Study tasks |
 | `GET /marks?subject_id=`, `POST /marks`, `DELETE /marks/{id}` | Assessment marks |
 | `GET /dashboard/summary` | Stats for the dashboard |
+| `POST /ai/generate-plan` | `{start_date, end_date}` → validated plan **preview** from Gemini (nothing saved) |
+| `POST /ai/save-plan` | Saves a previewed plan; replaces only *pending AI* tasks in that range |
+
+## AI study plans
+
+On **My Study Plan**, set your daily minutes, study days and goal under *Study settings*, then click
+**Generate AI Plan** and pick a date range (max 31 days). Gemini is called only when you click Generate.
+
+1. The backend sends Gemini your subjects, pending topics, upcoming exams, weak subjects, preferences and the
+   free minutes left on each study day (existing manual/completed tasks count against the daily limit),
+   and asks for JSON only.
+2. The response is validated with Pydantic; if it is malformed the request is retried once, then a clear
+   error is returned. Rate limits (HTTP 429) produce a friendly "try again in a minute" message.
+3. Subject/topic names are mapped back to your IDs. Anything that doesn't match, falls on a non-study day,
+   or would exceed the daily minutes is skipped (and listed in the preview).
+4. You review the preview and choose **Save**, **Regenerate** or **Cancel**. Saving stores the plan in
+   `study_plans` and creates `study_tasks` with `source='ai'`, first deleting only the *pending AI* tasks in
+   that date range — manual and completed tasks are never touched.

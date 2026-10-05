@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ClipboardList, Plus } from 'lucide-react'
+import { ClipboardList, Plus, Sparkles } from 'lucide-react'
 import api, { errorMessage } from '../api/client'
 import { useApi } from '../api/useApi'
 import { useTaskToggle } from '../api/tasks'
+import GeneratePlanModal from '../components/GeneratePlanModal'
+import PlanSettings from '../components/PlanSettings'
 import TaskItem from '../components/TaskItem'
 import { ConfirmDialog, EmptyState, LoadingBlock, Modal, PageHeader, Spinner } from '../components/ui'
 import { useToast } from '../context/ToastContext'
@@ -106,6 +108,7 @@ export default function StudyPlan() {
   const subjects = useApi('/subjects', [])
   const [view, setView] = useState('upcoming')
   const [adding, setAdding] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [deleting, setDeleting] = useState(null)
   const [busy, setBusy] = useState(false)
   const { toggle, busyId } = useTaskToggle(tasks.setData)
@@ -139,7 +142,14 @@ export default function StudyPlan() {
   return (
     <div className="space-y-6">
       <PageHeader title="My Study Plan" subtitle="Your study tasks, grouped by day."
-        action={<button className="btn-primary" onClick={() => setAdding(true)}><Plus className="h-4 w-4" /> Add task</button>} />
+        action={
+          <div className="flex flex-wrap gap-2">
+            <button className="btn-secondary" onClick={() => setAdding(true)}><Plus className="h-4 w-4" /> Add task</button>
+            <button className="btn-primary" onClick={() => setGenerating(true)}><Sparkles className="h-4 w-4" /> Generate AI Plan</button>
+          </div>
+        } />
+
+      <PlanSettings />
 
       <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 text-sm" role="tablist">
         {[['upcoming', 'Upcoming'], ['all', 'All tasks']].map(([key, label]) => (
@@ -181,6 +191,7 @@ export default function StudyPlan() {
       )}
 
       <TaskModal open={adding} subjects={subjects.data} onClose={() => setAdding(false)} onSaved={() => tasks.reload({ silent: true })} />
+      <GeneratePlanModal open={generating} onClose={() => setGenerating(false)} onSaved={() => tasks.reload({ silent: true })} />
       <ConfirmDialog open={Boolean(deleting)} title="Delete task" busy={busy} onClose={() => setDeleting(null)} onConfirm={confirmDelete}
         message={`Delete "${deleting?.title}"?`} />
     </div>

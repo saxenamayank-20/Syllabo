@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
-from app.routers import auth, dashboard, exams, marks, preferences, subjects, tasks, topics
+from app.routers import ai, auth, dashboard, exams, marks, preferences, subjects, tasks, topics
 
 logger = logging.getLogger("studyai")
 
@@ -29,7 +29,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     )
 
 
-for router in (auth, subjects, topics, exams, preferences, tasks, marks, dashboard):
+for router in (auth, subjects, topics, exams, preferences, tasks, marks, dashboard, ai):
     app.include_router(router.router)
 
 
