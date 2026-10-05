@@ -1,8 +1,8 @@
-import { Sparkles, Trash2 } from 'lucide-react'
+import { Pencil, Sparkles, Trash2 } from 'lucide-react'
 import { formatDuration, formatTime } from '../utils/date'
 import { Checkbox } from './ui'
 
-export default function TaskItem({ task, busy, onToggle, onDelete }) {
+export default function TaskItem({ task, busy, onToggle, onEdit, onDelete }) {
   const done = task.status === 'completed'
   return (
     <li className="group flex items-center gap-4 py-3">
@@ -21,14 +21,19 @@ export default function TaskItem({ task, busy, onToggle, onDelete }) {
         </p>
       </div>
       {task.start_time && <span className="shrink-0 text-xs text-slate-400">{formatTime(task.start_time)}</span>}
-      {onDelete && (
-        <button
-          onClick={() => onDelete(task)}
-          className="btn-ghost opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
-          aria-label={`Delete "${task.title}"`}
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+      {(onEdit || onDelete) && (
+        <div className="flex shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100">
+          {onEdit && (
+            <button onClick={() => onEdit(task)} className="btn-ghost" aria-label={`Edit "${task.title}"`}>
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={() => onDelete(task)} className="btn-ghost hover:text-red-600" aria-label={`Delete "${task.title}"`}>
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       )}
     </li>
   )

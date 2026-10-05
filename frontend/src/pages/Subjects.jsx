@@ -161,21 +161,31 @@ function SubjectCard({ subject, onEdit, onDelete, onChanged }) {
 
 const emptyExam = () => ({ title: '', subject_id: '', exam_date: toISODate(), syllabus: '' })
 
-function ExamModal({ open, subjects, onClose, onSaved }) {
+const examToForm = (e) => ({
+  title: e.title,
+  subject_id: e.subject_id ? String(e.subject_id) : '',
+  exam_date: e.exam_date,
+  syllabus: e.syllabus,
+})
+
+/** Add an exam, or edit `exam` when given. */
+function ExamModal({ open, exam, subjects, onClose, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(emptyExam)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (open) setForm(emptyExam())
-  }, [open])
+    if (open) setForm(exam ? examToForm(exam) : emptyExam())
+  }, [open, exam])
 
   const submit = async (e) => {
     e.preventDefault()
     setBusy(true)
     try {
-      await api.post('/exams', { ...form, subject_id: form.subject_id ? Number(form.subject_id) : null })
-      toast.success('Exam added')
+      const payload = { ...form, subject_id: form.subject_id ? Number(form.subject_id) : null }
+      if (exam) await api.patch(`/exams/${exam.id}`, payload)
+      else await api.post('/exams', payload)
+      toast.success(exam ? 'Exam updated' : 'Exam added')
       onSaved()
       onClose()
     } catch (err) {
@@ -188,7 +198,7 @@ function ExamModal({ open, subjects, onClose, onSaved }) {
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
   return (
-    <Modal open={open} title="Add exam" onClose={onClose}
+    <Modal open={open} title={exam ? 'Edit exam' : 'Add exam'} onClose={onClose}
       footer={
         <>
           <button className="btn-secondary" type="button" onClick={onClose}>Cancel</button>
@@ -229,6 +239,7 @@ function ExamsSection({ subjects }) {
   const toast = useToast()
   const exams = useApi('/exams', [])
   const [adding, setAdding] = useState(false)
+  const [editing, setEditing] = useState(null)
   const [deleting, setDeleting] = useState(null)
   const [busy, setBusy] = useState(false)
   const today = toISODate()
@@ -273,7 +284,10 @@ function ExamsSection({ subjects }) {
                 <span className={`shrink-0 text-xs font-medium ${past ? 'text-slate-400' : 'text-slate-700'}`}>
                   {formatDate(exam.exam_date)}{past && ' (past)'}
                 </span>
-                <button className="btn-ghost hover:text-red-600" onClick={() => setDeleting(exam)} aria-label={`Delete ${exam.title}`}>
+                <button className="btn-ghost" onClick={() => setEditing(exam)} aria-label={`Edit ${exam.title}`}>
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button className="btn-ghost -ml-2 hover:text-red-600" onClick={() => setDeleting(exam)} aria-label={`Delete ${exam.title}`}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </li>
@@ -281,7 +295,8 @@ function ExamsSection({ subjects }) {
           })}
         </ul>
       )}
-      <ExamModal open={adding} subjects={subjects} onClose={() => setAdding(false)} onSaved={() => exams.reload({ silent: true })} />
+      <ExamModal open={adding || Boolean(editing)} exam={editing} subjects={subjects}
+        onClose={() => { setAdding(false); setEditing(null) }} onSaved={() => exams.reload({ silent: true })} />
       <ConfirmDialog open={Boolean(deleting)} title="Delete exam" busy={busy} onClose={() => setDeleting(null)} onConfirm={confirmDelete}
         message={`Delete "${deleting?.title}"? This cannot be undone.`} />
     </section>

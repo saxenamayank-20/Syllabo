@@ -1,17 +1,26 @@
 import { useState } from 'react'
-import { BarChart3, ClipboardList, Plus, Trash2 } from 'lucide-react'
+import { BarChart3, ClipboardList, Pencil, Plus, Save, Trash2 } from 'lucide-react'
 import api, { errorMessage } from '../api/client'
 import { useApi } from '../api/useApi'
 import PerformanceChart, { ChartLegend } from '../components/PerformanceChart'
-import { CardHeader, ConfirmDialog, EmptyState, LoadingBlock, PageHeader, Spinner, SubjectDot } from '../components/ui'
+import { CardHeader, ConfirmDialog, EmptyState, LoadingBlock, Modal, PageHeader, Spinner, SubjectDot } from '../components/ui'
 import { useToast } from '../context/ToastContext'
 import { formatDate, toISODate } from '../utils/date'
 
 const emptyMark = () => ({ subject_id: '', assessment_name: '', score: '', max_score: '100', assessment_date: toISODate() })
 
-function MarkForm({ subjects, onSaved }) {
+const markToForm = (m) => ({
+  subject_id: String(m.subject_id),
+  assessment_name: m.assessment_name,
+  score: String(m.score),
+  max_score: String(m.max_score),
+  assessment_date: m.assessment_date,
+})
+
+/** Add a mark, or edit `mark` when given. */
+function MarkForm({ subjects, mark, onSaved }) {
   const toast = useToast()
-  const [form, setForm] = useState(emptyMark)
+  const [form, setForm] = useState(() => (mark ? markToForm(mark) : emptyMark()))
   const [busy, setBusy] = useState(false)
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
@@ -19,14 +28,20 @@ function MarkForm({ subjects, onSaved }) {
     e.preventDefault()
     setBusy(true)
     try {
-      await api.post('/marks', {
+      const payload = {
         ...form,
         subject_id: Number(form.subject_id),
         score: Number(form.score),
         max_score: Number(form.max_score),
-      })
-      toast.success('Mark added')
-      setForm({ ...emptyMark(), subject_id: form.subject_id })
+      }
+      if (mark) {
+        await api.patch(`/marks/${mark.id}`, payload)
+        toast.success('Mark updated')
+      } else {
+        await api.post('/marks', payload)
+        toast.success('Mark added')
+        setForm({ ...emptyMark(), subject_id: form.subject_id })
+      }
       onSaved()
     } catch (err) {
       toast.error(errorMessage(err))
@@ -67,7 +82,8 @@ function MarkForm({ subjects, onSaved }) {
         <input id="mark-date" type="date" required className="input" value={form.assessment_date} onChange={set('assessment_date')} />
       </div>
       <button type="submit" className="btn-primary w-full" disabled={busy}>
-        {busy ? <Spinner className="h-4 w-4 text-white" /> : <Plus className="h-4 w-4" />} Add mark
+        {busy ? <Spinner className="h-4 w-4 text-white" /> : mark ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        {mark ? 'Save changes' : 'Add mark'}
       </button>
     </form>
   )
@@ -79,6 +95,7 @@ export default function Performance() {
   const subjects = useApi('/subjects', [])
   const marks = useApi('/marks', [])
   const [deleting, setDeleting] = useState(null)
+  const [editing, setEditing] = useState(null)
   const [busy, setBusy] = useState(false)
   const colorById = Object.fromEntries(subjects.data.map((s) => [s.id, s.color]))
 
@@ -145,7 +162,10 @@ export default function Performance() {
                     <td className="px-5 py-2.5 text-slate-700">{m.assessment_name}</td>
                     <td className="whitespace-nowrap px-5 py-2.5 text-right tabular-nums text-slate-700">{m.score} / {m.max_score}</td>
                     <td className="px-5 py-2.5 text-right font-medium tabular-nums text-slate-900">{m.percentage}%</td>
-                    <td className="px-5 py-2.5 text-right">
+                    <td className="whitespace-nowrap px-5 py-2.5 text-right">
+                      <button className="btn-ghost" onClick={() => setEditing(m)} aria-label={`Edit ${m.assessment_name}`}>
+                        <Pencil className="h-4 w-4" />
+                      </button>
                       <button className="btn-ghost hover:text-red-600" onClick={() => setDeleting(m)} aria-label={`Delete ${m.assessment_name}`}>
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -158,6 +178,12 @@ export default function Performance() {
         )}
       </div>
 
+      <Modal open={Boolean(editing)} title="Edit mark" onClose={() => setEditing(null)}>
+        {editing && (
+          <MarkForm key={editing.id} subjects={subjects.data} mark={editing}
+            onSaved={() => { setEditing(null); refresh() }} />
+        )}
+      </Modal>
       <ConfirmDialog open={Boolean(deleting)} title="Delete mark" busy={busy} onClose={() => setDeleting(null)} onConfirm={confirmDelete}
         message={`Delete "${deleting?.assessment_name}" (${deleting?.subject_name})?`} />
     </div>

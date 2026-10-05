@@ -1,8 +1,7 @@
-from datetime import date
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.timezones import user_today
 from app.models import Exam, Subject, User
 from app.schemas.exam import ExamCreate, ExamUpdate
 from app.services.ownership import get_owned
@@ -16,7 +15,7 @@ def _check_subject(db: Session, user: User, subject_id: int | None) -> None:
 def list_exams(db: Session, user: User, upcoming: bool = False) -> list[Exam]:
     stmt = select(Exam).where(Exam.user_id == user.id)
     if upcoming:
-        stmt = stmt.where(Exam.exam_date >= date.today())
+        stmt = stmt.where(Exam.exam_date >= user_today(user))
     return list(db.scalars(stmt.order_by(Exam.exam_date, Exam.id)))
 
 

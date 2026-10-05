@@ -12,14 +12,24 @@ import { formatDayHeading, formatDuration, toISODate } from '../utils/date'
 
 const emptyTask = () => ({ subject_id: '', topic_id: '', title: '', scheduled_date: toISODate(), start_time: '', duration_mins: 60 })
 
-function TaskModal({ open, subjects, onClose, onSaved }) {
+const taskToForm = (t) => ({
+  subject_id: String(t.subject_id),
+  topic_id: t.topic_id ? String(t.topic_id) : '',
+  title: t.title,
+  scheduled_date: t.scheduled_date,
+  start_time: t.start_time ? t.start_time.slice(0, 5) : '',
+  duration_mins: t.duration_mins,
+})
+
+/** Add a task, or edit `task` when given. */
+function TaskModal({ open, task, subjects, onClose, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(emptyTask)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (open) setForm(emptyTask())
-  }, [open])
+    if (open) setForm(task ? taskToForm(task) : emptyTask())
+  }, [open, task])
 
   const topics = subjects.find((s) => s.id === Number(form.subject_id))?.topics ?? []
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
@@ -28,15 +38,17 @@ function TaskModal({ open, subjects, onClose, onSaved }) {
     e.preventDefault()
     setBusy(true)
     try {
-      await api.post('/tasks', {
+      const payload = {
         subject_id: Number(form.subject_id),
         topic_id: form.topic_id ? Number(form.topic_id) : null,
         title: form.title.trim(),
         scheduled_date: form.scheduled_date,
         start_time: form.start_time || null,
         duration_mins: Number(form.duration_mins),
-      })
-      toast.success('Task added')
+      }
+      if (task) await api.patch(`/tasks/${task.id}`, payload)
+      else await api.post('/tasks', payload)
+      toast.success(task ? 'Task updated' : 'Task added')
       onSaved()
       onClose()
     } catch (err) {
@@ -47,7 +59,7 @@ function TaskModal({ open, subjects, onClose, onSaved }) {
   }
 
   return (
-    <Modal open={open} title="Add study task" onClose={onClose}
+    <Modal open={open} title={task ? 'Edit study task' : 'Add study task'} onClose={onClose}
       footer={
         <>
           <button className="btn-secondary" type="button" onClick={onClose}>Cancel</button>
@@ -108,6 +120,7 @@ export default function StudyPlan() {
   const subjects = useApi('/subjects', [])
   const [view, setView] = useState('upcoming')
   const [adding, setAdding] = useState(false)
+  const [editing, setEditing] = useState(null)
   const [generating, setGenerating] = useState(false)
   const [deleting, setDeleting] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -181,7 +194,7 @@ export default function StudyPlan() {
                 </div>
                 <ul className="divide-y divide-slate-100">
                   {list.map((t) => (
-                    <TaskItem key={t.id} task={t} busy={busyId === t.id} onToggle={toggle} onDelete={setDeleting} />
+                    <TaskItem key={t.id} task={t} busy={busyId === t.id} onToggle={toggle} onEdit={setEditing} onDelete={setDeleting} />
                   ))}
                 </ul>
               </section>
@@ -190,7 +203,8 @@ export default function StudyPlan() {
         </div>
       )}
 
-      <TaskModal open={adding} subjects={subjects.data} onClose={() => setAdding(false)} onSaved={() => tasks.reload({ silent: true })} />
+      <TaskModal open={adding || Boolean(editing)} task={editing} subjects={subjects.data}
+        onClose={() => { setAdding(false); setEditing(null) }} onSaved={() => tasks.reload({ silent: true })} />
       <GeneratePlanModal open={generating} onClose={() => setGenerating(false)} onSaved={() => tasks.reload({ silent: true })} />
       <ConfirmDialog open={Boolean(deleting)} title="Delete task" busy={busy} onClose={() => setDeleting(null)} onConfirm={confirmDelete}
         message={`Delete "${deleting?.title}"?`} />

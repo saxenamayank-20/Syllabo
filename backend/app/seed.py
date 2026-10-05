@@ -1,6 +1,7 @@
 """Create (or reset) a demo user with sample data. Run: python -m app.seed"""
 
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 
@@ -10,6 +11,7 @@ from app.models import Exam, Mark, StudyPreference, StudyTask, Subject, Topic, U
 
 DEMO_EMAIL = "demo@studyai.app"
 DEMO_PASSWORD = "demo1234"
+DEMO_TIMEZONE = "Asia/Kolkata"
 
 SUBJECTS: list[tuple[str, str, int, list[str]]] = [
     ("Mathematics", "#2563eb", 80, ["Algebra", "Trigonometry", "Calculus", "Probability", "Matrices"]),
@@ -42,7 +44,7 @@ TASKS: list[tuple[str, str, time, int, str | None, bool, int]] = [
 
 
 def seed() -> None:
-    today = date.today()
+    today = datetime.now(ZoneInfo(DEMO_TIMEZONE)).date()
     now = datetime.now(timezone.utc)
     with SessionLocal() as db:
         existing = db.scalar(select(User).where(User.email == DEMO_EMAIL))
@@ -51,7 +53,8 @@ def seed() -> None:
             db.commit()
 
         user = User(
-            name="Aarav Sharma", email=DEMO_EMAIL, password_hash=hash_password(DEMO_PASSWORD), email_verified=True
+            name="Aarav Sharma", email=DEMO_EMAIL, password_hash=hash_password(DEMO_PASSWORD),
+            email_verified=True, timezone=DEMO_TIMEZONE,
         )
         db.add(user)
         db.flush()

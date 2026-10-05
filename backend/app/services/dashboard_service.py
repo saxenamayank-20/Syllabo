@@ -1,8 +1,9 @@
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.timezones import user_today
 from app.models import Mark, StudyTask, Subject, Topic, User
 from app.schemas.dashboard import DashboardSummary, SubjectPerformance
 from app.schemas.exam import ExamOut
@@ -48,7 +49,7 @@ def subject_performance(db: Session, user: User) -> list[SubjectPerformance]:
 
 
 def summary(db: Session, user: User) -> DashboardSummary:
-    today = date.today()
+    today = user_today(user)
 
     today_tasks = db.scalars(
         select(StudyTask).where(StudyTask.user_id == user.id, StudyTask.scheduled_date == today)

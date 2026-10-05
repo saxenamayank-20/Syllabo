@@ -4,10 +4,10 @@ from app.models.plan import StudyPlan
 from app.models.preference import StudyPreference
 from app.models.subject import Subject, Topic
 from app.models.task import StudyTask
-from app.models.user import EmailVerification, User
+from app.models.user import AuthCode, User
 
 __all__ = [
-    "EmailVerification",
+    "AuthCode",
     "Exam",
     "Mark",
     "StudyPlan",

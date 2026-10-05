@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import update
 
 from app.core.database import get_db
-from app.models import EmailVerification
+from app.models import AuthCode
 from app.services import email_validation
 
 EMAIL = "riya@gmail.com"
@@ -61,7 +61,7 @@ def test_resend_cooldown_and_new_code(client: TestClient, fake_email: dict) -> N
 
     # Pretend the code was sent 2 minutes ago
     db = next(client.app.dependency_overrides[get_db]())
-    db.execute(update(EmailVerification).values(sent_at=datetime.now(timezone.utc) - timedelta(minutes=2)))
+    db.execute(update(AuthCode).values(sent_at=datetime.now(timezone.utc) - timedelta(minutes=2)))
     db.commit()
 
     assert client.post("/auth/resend-code", json={"email": EMAIL}).status_code == 200
@@ -73,7 +73,7 @@ def test_resend_cooldown_and_new_code(client: TestClient, fake_email: dict) -> N
 def test_expired_code_rejected(client: TestClient, fake_email: dict) -> None:
     signup(client)
     db = next(client.app.dependency_overrides[get_db]())
-    db.execute(update(EmailVerification).values(expires_at=datetime.now(timezone.utc) - timedelta(seconds=1)))
+    db.execute(update(AuthCode).values(expires_at=datetime.now(timezone.utc) - timedelta(seconds=1)))
     db.commit()
     res = client.post("/auth/verify-email", json={"email": EMAIL, "code": fake_email[EMAIL]})
     assert res.status_code == 400 and "expired" in res.json()["detail"]

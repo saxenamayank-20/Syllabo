@@ -1,12 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { Bot, CalendarDays, NotebookPen, Settings } from 'lucide-react'
+import { Bot, CalendarDays, NotebookPen } from 'lucide-react'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import ComingSoon from './pages/ComingSoon'
 import Dashboard from './pages/Dashboard'
+import ForgotPassword from './pages/ForgotPassword'
 import Login from './pages/Login'
 import Performance from './pages/Performance'
 import Register from './pages/Register'
+import Settings from './pages/Settings'
 import StudyPlan from './pages/StudyPlan'
 import Subjects from './pages/Subjects'
 import VerifyEmail from './pages/VerifyEmail'
@@ -17,6 +19,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
@@ -26,7 +29,7 @@ export default function App() {
           <Route path="assistant" element={<ComingSoon title="AI Assistant" icon={Bot} />} />
           <Route path="calendar" element={<ComingSoon title="Calendar" icon={CalendarDays} />} />
           <Route path="notes" element={<ComingSoon title="Notes" icon={NotebookPen} />} />
-          <Route path="settings" element={<ComingSoon title="Settings" icon={Settings} />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

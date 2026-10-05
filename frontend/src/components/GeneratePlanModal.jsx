@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { AlertTriangle, RefreshCw, Sparkles } from 'lucide-react'
 import api, { errorMessage } from '../api/client'
 import { useToast } from '../context/ToastContext'
-import { formatDayHeading, formatDuration, formatTime, toISODate } from '../utils/date'
+import { addDaysISO, formatDayHeading, formatDuration, formatTime, toISODate } from '../utils/date'
 import { Modal, Spinner, SubjectDot } from './ui'
 
-const defaultRange = () => ({ start_date: toISODate(), end_date: toISODate(new Date(Date.now() + 6 * 86_400_000)) })
+const defaultRange = () => ({ start_date: toISODate(), end_date: addDaysISO(6) })
 
 function Preview({ preview }) {
   const total = preview.days.reduce((n, d) => n + d.tasks.length, 0)

@@ -10,7 +10,8 @@ from pydantic import ValidationError
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models import Exam, StudyPlan, StudyPreference, StudyTask, Subject, User
+from app.core.timezones import user_today
+from app.models import StudyPlan, StudyPreference, StudyTask, Subject, User
 from app.schemas.ai import (
     AIPlan,
     GeneratePlanRequest,
@@ -134,9 +135,10 @@ def build_prompt(db: Session, user: User, ctx: _Context, start: date, end: date)
         + (", ".join(t.name for t in s.topics if t.status == "pending") or "no pending topics - revision only")
         for s in ctx.subjects
     ]
+    today = user_today(user)
     names = {s.id: s.name for s in ctx.subjects}
     exams = [
-        f"{e.exam_date.isoformat()} ({(e.exam_date - date.today()).days} days away): {e.title}"
+        f"{e.exam_date.isoformat()} ({(e.exam_date - today).days} days away): {e.title}"
         + (f" [subject: {names[e.subject_id]}]" if e.subject_id in names else "")
         + (f" - syllabus: {e.syllabus}" if e.syllabus else "")
         for e in list_exams(db, user, upcoming=True)
@@ -157,7 +159,7 @@ def build_prompt(db: Session, user: User, ctx: _Context, start: date, end: date)
     return PROMPT_TEMPLATE.format(
         start=start.isoformat(),
         end=end.isoformat(),
-        today=date.today().isoformat(),
+        today=today.isoformat(),
         study_days=ctx.prefs.study_days,
         daily=ctx.prefs.daily_study_minutes,
         availability=lines(availability, "none"),

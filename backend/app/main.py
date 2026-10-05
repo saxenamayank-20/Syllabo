@@ -1,4 +1,6 @@
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +11,19 @@ from app.routers import ai, auth, dashboard, exams, marks, preferences, subjects
 
 logger = logging.getLogger("studyai")
 
-app = FastAPI(title="StudyAI API", version="0.1.0")
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    settings = get_settings()
+    if settings.environment == "production" and (problems := settings.production_problems()):
+        raise RuntimeError("Refusing to start in production:\n- " + "\n- ".join(problems))
+    if settings.email_provider == "console":
+        logger.warning("EMAIL_PROVIDER=console: verification/reset codes are printed here, not emailed.")
+    yield
+
+
+app = FastAPI(title="StudyAI API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

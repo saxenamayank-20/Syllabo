@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, String, false
+from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -18,16 +18,22 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     email_verified: Mapped[bool] = mapped_column(default=False, server_default=false())
+    # IANA zone (e.g. "Asia/Kolkata"); decides what "today" means for this user.
+    timezone: Mapped[str] = mapped_column(String(64), default="UTC", server_default="UTC")
+    # Bumped on password change/reset; tokens carrying an older version stop working.
+    token_version: Mapped[int] = mapped_column(default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
-class EmailVerification(Base):
-    """The current one-time code for an unverified user (one row per user, replaced on resend)."""
+class AuthCode(Base):
+    """A user's current one-time code for a purpose ('verify' email or 'reset' password)."""
 
-    __tablename__ = "email_verifications"
+    __tablename__ = "auth_codes"
+    __table_args__ = (UniqueConstraint("user_id", "purpose", name="uq_auth_codes_user_purpose"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    purpose: Mapped[str] = mapped_column(String(20))
     code_hash: Mapped[str] = mapped_column(String(64))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     sent_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

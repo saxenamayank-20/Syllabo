@@ -32,7 +32,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isAuthCall = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-code'].some((p) =>
+    const isAuthCall = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-code', '/auth/forgot-password', '/auth/reset-password', '/auth/change-password'].some((p) =>
       error.config?.url?.startsWith(p),
     )
     if (error.response?.status === 401 && !isAuthCall && accessToken) {
@@ -44,7 +44,7 @@ api.interceptors.response.use(
 
 /** Turn an axios error into a human-readable message. */
 export function errorMessage(error, fallback = 'Something went wrong. Please try again.') {
-  if (!error?.response) return 'Cannot reach the server. Is the backend running?'
+  if (!error?.response) return 'Cannot reach the server. It may be waking up — please try again in a few seconds.'
   const detail = error.response.data?.detail
   if (typeof detail === 'string') return detail
   if (detail && typeof detail === 'object' && !Array.isArray(detail) && detail.message) return detail.message

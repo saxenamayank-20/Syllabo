@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models import StudyTask, User
-from app.schemas.task import TaskCreate, TaskOut, TaskStatusUpdate
+from app.schemas.task import TaskCreate, TaskOut, TaskStatusUpdate, TaskUpdate
 from app.services import task_service
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -26,6 +26,16 @@ def create_task(
     data: TaskCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> StudyTask:
     return task_service.create_task(db, user, data)
+
+
+@router.patch("/{task_id}", response_model=TaskOut)
+def update_task(
+    task_id: int,
+    data: TaskUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> StudyTask:
+    return task_service.update_task(db, user, task_id, data)
 
 
 @router.patch("/{task_id}/status", response_model=TaskOut)

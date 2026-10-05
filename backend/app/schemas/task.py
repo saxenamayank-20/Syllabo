@@ -17,6 +17,15 @@ class TaskCreate(BaseModel):
     duration_mins: int = Field(default=60, ge=5, le=960)
 
 
+class TaskUpdate(BaseModel):
+    subject_id: int | None = None
+    topic_id: int | None = None
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    scheduled_date: date | None = None
+    start_time: time | None = None
+    duration_mins: int | None = Field(default=None, ge=5, le=960)
+
+
 class TaskStatusUpdate(BaseModel):
     status: TaskStatus
 

@@ -1,0 +1,35 @@
+# Render Blueprint for the StudyAI backend (New → Blueprint → pick this repo).
+# Values marked `sync: false` are asked for when the Blueprint is created.
+services:
+  - type: web
+    name: studyai-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Migrations run on every start (pre-deploy commands need a paid plan).
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL          # Neon connection string
+        sync: false
+      - key: CORS_ORIGINS          # the Vercel URL, e.g. https://studyai.vercel.app
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM            # sender address verified in Brevo
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: StudyAI
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false

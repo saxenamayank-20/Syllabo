@@ -2,43 +2,81 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.rate_limit import rate_limit
 from app.core.security import get_current_user
 from app.models import User
 from app.schemas.auth import (
+    ChangePasswordRequest,
+    CodeSent,
+    EmailRequest,
     LoginRequest,
+    ProfileUpdate,
     RegisterRequest,
-    ResendCodeRequest,
+    ResetPasswordRequest,
     TokenResponse,
     UserOut,
-    VerificationPending,
     VerifyEmailRequest,
 )
 from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+# Separate buckets so e.g. typing a wrong code doesn't block logging in.
+login_limit = Depends(rate_limit("login"))
+code_limit = Depends(rate_limit("code"))
+send_limit = Depends(rate_limit("send"))
 
-@router.post("/register", response_model=VerificationPending, status_code=status.HTTP_201_CREATED)
-def register(data: RegisterRequest, db: Session = Depends(get_db)) -> VerificationPending:
+
+@router.post(
+    "/register", response_model=CodeSent, status_code=status.HTTP_201_CREATED, dependencies=[send_limit]
+)
+def register(data: RegisterRequest, db: Session = Depends(get_db)) -> CodeSent:
     """Create an unverified account and email a 6-digit code. No token until the email is verified."""
     return auth_service.register(db, data)
 
 
-@router.post("/verify-email", response_model=TokenResponse)
+@router.post("/verify-email", response_model=TokenResponse, dependencies=[code_limit])
 def verify_email(data: VerifyEmailRequest, db: Session = Depends(get_db)) -> TokenResponse:
     return auth_service.verify_email(db, data)
 
 
-@router.post("/resend-code", response_model=VerificationPending)
-def resend_code(data: ResendCodeRequest, db: Session = Depends(get_db)) -> VerificationPending:
-    return auth_service.resend_code(db, data)
+@router.post("/resend-code", response_model=CodeSent, dependencies=[send_limit])
+def resend_code(data: EmailRequest, db: Session = Depends(get_db)) -> CodeSent:
+    return auth_service.resend_verification(db, data)
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[login_limit])
 def login(data: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
     return auth_service.login(db, data)
+
+
+@router.post("/forgot-password", response_model=CodeSent, dependencies=[send_limit])
+def forgot_password(data: EmailRequest, db: Session = Depends(get_db)) -> CodeSent:
+    """Email a password reset code (the response is the same whether or not the account exists)."""
+    return auth_service.forgot_password(db, data)
+
+
+@router.post("/reset-password", response_model=TokenResponse, dependencies=[code_limit])
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)) -> TokenResponse:
+    """Set a new password using the emailed code. Logs out all other sessions."""
+    return auth_service.reset_password(db, data)
 
 
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)) -> User:
     return user
+
+
+@router.patch("/me", response_model=UserOut)
+def update_me(
+    data: ProfileUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+) -> User:
+    return auth_service.update_profile(db, user, data)
+
+
+@router.post("/change-password", response_model=TokenResponse, dependencies=[login_limit])
+def change_password(
+    data: ChangePasswordRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+) -> TokenResponse:
+    """Change password; returns a fresh token and logs out other sessions."""
+    return auth_service.change_password(db, user, data)
