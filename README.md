@@ -2,14 +2,14 @@
 
 Full-stack app: FastAPI + SQLAlchemy backend, React (Vite) frontend, Google Gemini for AI study plans.
 
-> **Status:** Phase 1 (backend foundation) complete. Frontend and AI plan generation come in Phases 2–3.
+> **Status:** Phase 1 (backend) and Phase 2 (frontend core) complete. AI plan generation comes in Phase 3.
 
 ## Project layout
 
 ```
 studyai/
   backend/    FastAPI app, Alembic migrations, tests, seed script
-  frontend/   React (Vite) app — Phase 2
+  frontend/   React (Vite) + Tailwind app
   docs/       UI mockup (mockup-dashboard.jpg)
 ```
 
@@ -61,6 +61,24 @@ Tests use an isolated in-memory SQLite database.
 alembic revision --autogenerate -m "describe change"
 alembic upgrade head
 ```
+
+## Frontend setup
+
+Requires Node 18+.
+
+```bash
+cd frontend
+cp .env.example .env   # VITE_API_URL, defaults to http://localhost:8000
+npm install
+npm run dev            # http://localhost:5173
+```
+
+Log in with the seeded demo account (`demo@studyai.app` / `demo1234`) or register a new one.
+`npm run build` produces a production bundle in `frontend/dist/`.
+
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Backend base URL (default `http://localhost:8000`). Must be listed in the backend's `CORS_ORIGINS`. |
 
 ## API overview
 
