@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { errorMessage } from '../api/client'
+import { errorMessage, isEmailNotVerified } from '../api/client'
 import AuthShell from '../components/AuthShell'
 import { Spinner } from '../components/ui'
 import { useAuth } from '../context/AuthContext'
@@ -23,6 +23,13 @@ export default function Login() {
       await login(form.email, form.password)
       navigate(location.state?.from?.pathname || '/', { replace: true })
     } catch (err) {
+      if (isEmailNotVerified(err)) {
+        const email = err.response.data.detail.email
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`, {
+          state: { email, email_sent: true, message: `Please verify your email first. Check ${email} for your code.` },
+        })
+        return
+      }
       setError(errorMessage(err))
       setBusy(false)
     }

@@ -17,6 +17,14 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model: str = ""
 
+    # Email verification (Gmail SMTP by default). With no SMTP_USER, codes are printed to the server log.
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_name: str = "StudyAI"
+    email_check_deliverability: bool = True
+
     @property
     def sqlalchemy_url(self) -> str:
         """Resolved DB URL: falls back to local SQLite, and forces the psycopg v3 driver for Postgres."""

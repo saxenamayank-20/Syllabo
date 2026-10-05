@@ -2,7 +2,7 @@
 
 Full-stack app: FastAPI + SQLAlchemy backend, React (Vite) frontend, Google Gemini for AI study plans.
 
-> **Status:** Phases 1–3 complete: backend, frontend core, and AI study plan generation.
+> **Status:** Phases 1–3 complete (backend, frontend core, AI study plans) plus email verification.
 
 ## Project layout
 
@@ -38,6 +38,11 @@ uvicorn app.main:app --reload # http://localhost:8000  (API docs at /docs)
 | `CORS_ORIGINS` | Comma-separated allowed frontend origins (default `http://localhost:5173`). |
 | `GEMINI_API_KEY` | Google Gemini API key (from Google AI Studio). Without it, AI plan generation returns a clear "not configured" error; everything else works. |
 | `GEMINI_MODEL` | Gemini model name to use (read from env, never hardcoded). |
+| `SMTP_HOST` / `SMTP_PORT` | Mail server for verification emails (default Gmail: `smtp.gmail.com` / `587`). |
+| `SMTP_USER` | Sending address, e.g. `yourapp@gmail.com`. **Empty = dev mode:** codes are printed in the backend terminal. |
+| `SMTP_PASSWORD` | Gmail **App Password** (16 characters), not the normal account password. |
+| `SMTP_FROM_NAME` | Display name on outgoing mail (default `StudyAI`). |
+| `EMAIL_CHECK_DELIVERABILITY` | `true` (default) rejects emails whose domain can't receive mail. |
 
 ### Seed data
 
@@ -86,7 +91,10 @@ All endpoints except `/auth/register`, `/auth/login` and `/health` require `Auth
 
 | Method & path | Purpose |
 |---|---|
-| `POST /auth/register`, `POST /auth/login` | Returns `{access_token, user}` |
+| `POST /auth/register` | Creates an unverified account and emails a 6-digit code (no token yet) |
+| `POST /auth/verify-email` | `{email, code}` → `{access_token, user}` |
+| `POST /auth/resend-code` | `{email}` → sends a new code (once per 60 s) |
+| `POST /auth/login` | `{access_token, user}`; 403 `email_not_verified` until the email is verified |
 | `GET /auth/me` | Current user |
 | `GET/POST /subjects`, `GET/PATCH/DELETE /subjects/{id}` | Subjects (GET includes nested topics) |
 | `GET/POST /subjects/{id}/topics` | Topics of a subject |
@@ -99,6 +107,23 @@ All endpoints except `/auth/register`, `/auth/login` and `/health` require `Auth
 | `GET /dashboard/summary` | Stats for the dashboard |
 | `POST /ai/generate-plan` | `{start_date, end_date}` → validated plan **preview** from Gemini (nothing saved) |
 | `POST /ai/save-plan` | Saves a previewed plan; replaces only *pending AI* tasks in that range |
+
+## Email verification
+
+New accounts must verify their email before they can log in.
+
+- On sign-up the address is checked: its domain must be able to receive mail (DNS MX lookup) and
+  throwaway inboxes (mailinator, yopmail, temp-mail, …) are rejected.
+- A 6-digit code is emailed. It expires after 10 minutes, allows 5 wrong attempts, and can be resent once a
+  minute. Codes are stored hashed.
+- Logging in to an unverified account sends the user to the "Check your email" screen.
+
+**Gmail setup:** turn on 2-Step Verification on the Gmail account, create an App Password
+(Google Account → Security → App passwords), then set `SMTP_USER=you@gmail.com` and
+`SMTP_PASSWORD=<16-char app password>` in `backend/.env` and restart the backend. Gmail allows roughly
+500 emails/day on a free account; use Brevo/Resend/SendGrid SMTP (same settings, different host) for more.
+
+Without `SMTP_USER`, the backend prints each code in its terminal, so you can test locally with no email account.
 
 ## AI study plans
 

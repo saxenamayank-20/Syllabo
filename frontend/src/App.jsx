@@ -9,12 +9,14 @@ import Performance from './pages/Performance'
 import Register from './pages/Register'
 import StudyPlan from './pages/StudyPlan'
 import Subjects from './pages/Subjects'
+import VerifyEmail from './pages/VerifyEmail'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />

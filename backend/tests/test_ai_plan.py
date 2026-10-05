@@ -158,7 +158,7 @@ def test_save_rejects_overbooked_day_and_foreign_subject(client: TestClient, set
     ]}]}
     assert client.post("/ai/save-plan", json=too_long, headers=headers).status_code == 422
 
-    other = register(client, "other@example.com")
+    other = register(client, "other@gmail.com")
     stolen = {**rng, "days": [{"date": monday.isoformat(), "tasks": [
         {"subject_id": sid, "title": "X", "start_time": "09:00", "duration_mins": 30},
     ]}]}

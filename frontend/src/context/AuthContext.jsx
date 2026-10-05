@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false))
   }, [logout])
 
+  // Login and email verification both return { access_token, user }.
   const authenticate = useCallback(async (path, payload) => {
     const { data } = await api.post(path, payload)
     setToken(data.access_token)
@@ -34,7 +35,9 @@ export function AuthProvider({ children }) {
       user,
       loading,
       login: (email, password) => authenticate('/auth/login', { email, password }),
-      register: (name, email, password) => authenticate('/auth/register', { name, email, password }),
+      // Registration doesn't log in: it returns { email, email_sent, message } and the user must verify first.
+      register: (name, email, password) => api.post('/auth/register', { name, email, password }).then((r) => r.data),
+      verifyEmail: (email, code) => authenticate('/auth/verify-email', { email, code }),
       logout,
     }),
     [user, loading, authenticate, logout],

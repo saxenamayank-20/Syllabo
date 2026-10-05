@@ -73,8 +73,8 @@ def test_subject_topic_crud_and_dashboard(client: TestClient) -> None:
 
 
 def test_users_cannot_see_each_others_data(client: TestClient) -> None:
-    alice = register(client, "alice@example.com")
-    bob = register(client, "bob@example.com")
+    alice = register(client, "alice@gmail.com")
+    bob = register(client, "bob@gmail.com")
 
     subject_id = client.post("/subjects", json={"name": "Math"}, headers=alice).json()["id"]
     topic_id = client.post(

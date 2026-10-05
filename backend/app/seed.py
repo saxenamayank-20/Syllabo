@@ -50,7 +50,9 @@ def seed() -> None:
             db.delete(existing)  # cascades to all of the demo user's data
             db.commit()
 
-        user = User(name="Aarav Sharma", email=DEMO_EMAIL, password_hash=hash_password(DEMO_PASSWORD))
+        user = User(
+            name="Aarav Sharma", email=DEMO_EMAIL, password_hash=hash_password(DEMO_PASSWORD), email_verified=True
+        )
         db.add(user)
         db.flush()
 

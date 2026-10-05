@@ -19,8 +19,8 @@ export default function Register() {
     setBusy(true)
     setError('')
     try {
-      await register(form.name, form.email, form.password)
-      navigate('/', { replace: true })
+      const pending = await register(form.name, form.email, form.password)
+      navigate(`/verify-email?email=${encodeURIComponent(pending.email)}`, { state: pending })
     } catch (err) {
       setError(errorMessage(err))
       setBusy(false)
@@ -43,6 +43,7 @@ export default function Register() {
         <div>
           <label className="label" htmlFor="email">Email</label>
           <input id="email" type="email" required autoComplete="email" className="input" {...field('email')} />
+          <p className="mt-1 text-xs text-slate-500">Use your real email — we&apos;ll send a code to verify it.</p>
         </div>
         <div>
           <label className="label" htmlFor="password">Password</label>

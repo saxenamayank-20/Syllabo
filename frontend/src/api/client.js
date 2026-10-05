@@ -32,7 +32,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isAuthCall = error.config?.url?.startsWith('/auth/login') || error.config?.url?.startsWith('/auth/register')
+    const isAuthCall = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-code'].some((p) =>
+      error.config?.url?.startsWith(p),
+    )
     if (error.response?.status === 401 && !isAuthCall && accessToken) {
       onUnauthorized()
     }
@@ -45,6 +47,7 @@ export function errorMessage(error, fallback = 'Something went wrong. Please try
   if (!error?.response) return 'Cannot reach the server. Is the backend running?'
   const detail = error.response.data?.detail
   if (typeof detail === 'string') return detail
+  if (detail && typeof detail === 'object' && !Array.isArray(detail) && detail.message) return detail.message
   if (Array.isArray(detail) && detail.length) {
     return detail
       .map((d) => {
@@ -58,3 +61,8 @@ export function errorMessage(error, fallback = 'Something went wrong. Please try
 }
 
 export default api
+
+/** True when the API refused login because the email address isn't verified yet. */
+export function isEmailNotVerified(error) {
+  return error?.response?.status === 403 && error.response.data?.detail?.code === 'email_not_verified'
+}
