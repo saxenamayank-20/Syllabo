@@ -5,6 +5,7 @@ services:
     name: studyai-api
     runtime: python
     plan: free
+    region: ohio            # same region as the Neon database (AWS us-east-2)
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     # Migrations run on every start (pre-deploy commands need a paid plan).
