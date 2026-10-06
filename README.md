@@ -1,162 +1,134 @@
-# StudyAI — AI-Based Student Study Planner & Performance Tracker
+# StudyAI
 
-Full-stack app: FastAPI + SQLAlchemy backend, React (Vite) + Tailwind frontend, Google Gemini for AI study plans.
+StudyAI is a study planner for students. You add your subjects, topics, exams and marks, and it shows you where
+you stand: what's on today, how many days are left until your next exam, how far through the syllabus you are,
+and which subjects need more attention. When you want a plan, it can put together a day-by-day study schedule
+with Google Gemini, built around your exams, your weak subjects and the time you actually have.
 
-> **Status:** feature-complete for the current scope. Deployment is prepared (Render + Vercel + Neon) and waits
-> only on the accounts and keys listed in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+![Dashboard](docs/mockup-dashboard.jpg)
 
-## Features
+## What it does
 
-- Sign-up with **email verification** (6-digit code), login, **forgot/reset password**, change password
-- Dashboard: today's tasks, days to next exam, overall progress, current grade, marks-vs-target chart,
-  upcoming exams, recommendations for weak subjects
-- Subjects & topics, exams, marks and study tasks — add, edit, delete, mark complete
-- **AI study plans** (Gemini) with a preview before saving
-- Settings: profile, timezone, password, study preferences
-- Each user's "today" follows their own timezone
+- **Dashboard** with today's tasks, a countdown to the next exam, overall progress, your current grade, a
+  marks-vs-target chart per subject, upcoming exams and suggestions for subjects that are falling behind.
+- **Subjects and topics** — tick topics off as you finish them.
+- **Exams and marks** — record test results and see how they compare with the target you set for each subject.
+- **My Study Plan** — tasks grouped by day. Add your own, or generate a plan with AI, review it, and save it
+  only if you like it.
+- **Accounts** — sign-up with email verification, password reset by email, and a settings page for your
+  profile, timezone, password and study preferences.
 
-## Project layout
+## Built with
 
-```
-backend/            FastAPI app, Alembic migrations, tests, seed script
-frontend/           React (Vite) + Tailwind app
-docs/               UI mockup, deployment guide
-render.yaml         Render Blueprint for the backend
-PROJECT_PROMPT.md   Original project specification
-```
+- **Backend:** Python, FastAPI, SQLAlchemy, Alembic, PostgreSQL (SQLite for local development)
+- **Frontend:** React (Vite), Tailwind CSS, React Router, Recharts
+- **AI:** Google Gemini
+- **Email:** Brevo (or any SMTP server)
 
-## Backend setup
+## Running it locally
 
-Requires Python 3.11+.
+You'll need Python 3.11+ and Node 18+.
+
+### Backend
 
 ```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # defaults work for local development
-alembic upgrade head          # create tables
-python -m app.seed            # optional: demo data
-uvicorn app.main:app --reload # http://localhost:8000  (API docs at /docs)
-```
-
-### Environment variables (`backend/.env`)
-
-| Variable | Description |
-|---|---|
-| `ENVIRONMENT` | `development` (default) or `production`. In production the server **refuses to start** if `JWT_SECRET`, `DATABASE_URL` or a real email provider is missing. |
-| `DATABASE_URL` | PostgreSQL URL (e.g. Neon). `postgresql://…` and `postgres://…` both work. **Empty = local SQLite** (`backend/studyai.db`). |
-| `JWT_SECRET` | Secret for signing login tokens (32+ random characters). Generate: `python -c "import secrets; print(secrets.token_hex(32))"` |
-| `JWT_EXPIRE_MINUTES` | Login lifetime in minutes (default 1440 = 1 day). |
-| `CORS_ORIGINS` | Comma-separated allowed frontend URLs (default `http://localhost:5173`). |
-| `GEMINI_API_KEY` / `GEMINI_MODEL` | Google Gemini key and model name. Without them, AI plan generation shows a clear "not configured" message; everything else works. |
-| `EMAIL_PROVIDER` | `console` (default — codes are printed in the backend terminal), `brevo` (recommended for production) or `smtp`. |
-| `EMAIL_FROM` / `EMAIL_FROM_NAME` | Sender address and display name. With Brevo the address must be a verified sender. |
-| `BREVO_API_KEY` | Brevo API key (when `EMAIL_PROVIDER=brevo`). |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | SMTP settings (when `EMAIL_PROVIDER=smtp`). For Gmail use an App Password. |
-| `EMAIL_CHECK_DELIVERABILITY` | `true` (default) rejects emails whose domain can't receive mail. |
-| `AUTH_RATE_LIMIT` / `AUTH_RATE_WINDOW_SECONDS` | Login/sign-up/code attempts allowed per IP (default 10 per 5 minutes). |
-
-### Seed data
-
-```bash
-python -m app.seed
-```
-
-Creates (or resets) a demo account — **email** `demo@studyai.app`, **password** `demo1234` (already verified,
-timezone Asia/Kolkata) — with 5 subjects, topics, exams, today's tasks, marks and study preferences.
-Re-running it wipes and recreates only the demo user's data.
-
-### Tests
-
-```bash
-pytest                                                        # in-memory SQLite
-TEST_DATABASE_URL=postgresql://user:pass@host/testdb pytest   # same suite on PostgreSQL
-```
-
-Point `TEST_DATABASE_URL` only at an empty, throwaway database — tables are dropped between tests.
-
-### Migrations
-
-```bash
-alembic revision --autogenerate -m "describe change"
+cp .env.example .env
 alembic upgrade head
+python -m app.seed          # optional: adds a demo account with sample data
+uvicorn app.main:app --reload
 ```
 
-## Frontend setup
+The API runs at <http://localhost:8000>, and you can browse every endpoint at <http://localhost:8000/docs>.
 
-Requires Node 18+.
+The default `.env` works as it is for local development. It uses a SQLite file instead of PostgreSQL, and
+instead of sending emails it prints verification and reset codes in the terminal where the backend is running.
+
+### Frontend
+
+In a second terminal:
 
 ```bash
 cd frontend
-cp .env.example .env   # VITE_API_URL, defaults to http://localhost:8000
+cp .env.example .env
 npm install
-npm run dev            # http://localhost:5173
-npm test               # Vitest + Testing Library
-npm run build          # production bundle in frontend/dist/
+npm run dev
 ```
 
-| Variable | Description |
-|---|---|
-| `VITE_API_URL` | Backend base URL (default `http://localhost:8000`). Must be listed in the backend's `CORS_ORIGINS`. |
+Then open <http://localhost:5173>.
 
-## Accounts & email
+### Demo account
 
-- **Sign-up** checks the address first: its domain must be able to receive mail (DNS MX lookup), and
-  throwaway inboxes (mailinator, yopmail, temp-mail, …) are rejected. A 6-digit code is emailed and the
-  account can't log in until it is verified.
-- **Forgot password** emails a reset code. Resetting (or changing) a password logs out every other session.
-- Codes expire after 10 minutes, allow 5 wrong attempts, can be resent once a minute, and are stored hashed.
-- Login, sign-up and code endpoints are rate-limited per IP. The limiter is in-memory, which fits a single
-  server instance; running several instances would need a shared store such as Redis.
-- **Local development:** with `EMAIL_PROVIDER=console`, codes appear in the backend terminal, so no email
-  account is needed.
-- **Production:** Brevo's HTTP API is recommended because Render's free tier blocks outgoing SMTP.
-  Gmail via SMTP also works on hosts that allow it (`EMAIL_PROVIDER=smtp`, App Password, ~500 emails/day).
+If you ran the seed script, log in with **demo@studyai.app** / **demo1234**. Running the seed script again
+resets the demo data. Don't run it against a production database.
 
-## AI study plans
+## Configuration
 
-On **My Study Plan**, set your daily minutes, study days and goal under *Study settings* (also on the
-Settings page), then click **Generate AI Plan** and pick a date range (max 31 days). Gemini is called only
-when you click Generate.
+The backend reads its settings from `backend/.env`. `backend/.env.example` lists all of them with comments;
+these are the ones that matter most:
 
-1. The backend sends Gemini your subjects, pending topics, upcoming exams, weak subjects, preferences and the
-   free minutes left on each study day (existing manual/completed tasks count against the daily limit),
-   and asks for JSON only.
-2. The response is validated with Pydantic; if it is malformed the request is retried once, then a clear
-   error is returned. Rate limits produce a friendly "try again in a minute" message.
-3. Subject/topic names are mapped back to your IDs. Anything that doesn't match, falls on a non-study day,
-   or would exceed the daily minutes is skipped (and listed in the preview).
-4. You review the preview and choose **Save**, **Regenerate** or **Cancel**. Saving stores the plan in
-   `study_plans` and creates `study_tasks` with `source='ai'`, first deleting only the *pending AI* tasks in
-   that date range — manual and completed tasks are never touched. Editing an AI task turns it into a
-   manual task, so regenerating never overwrites your edits.
+| Setting | What it's for |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string. Leave empty to use a local SQLite file. |
+| `JWT_SECRET` | Secret used to sign logins. Use a long random value in production. |
+| `CORS_ORIGINS` | The frontend address(es) allowed to call the API. |
+| `GEMINI_API_KEY`, `GEMINI_MODEL` | Google Gemini key and model for AI study plans. Without them, everything else still works. |
+| `EMAIL_PROVIDER` | `console` (print codes in the terminal), `brevo`, or `smtp`. |
+| `BREVO_API_KEY`, `EMAIL_FROM` | Brevo key and the sender address verified in Brevo. |
+| `ENVIRONMENT` | Set to `production` on the live server; it then refuses to start if anything important is missing. |
 
-## API overview
+The frontend has just one setting, `VITE_API_URL`, which is the address of the backend.
 
-All endpoints except the public `/auth/*` ones and `/health` require `Authorization: Bearer <token>`.
-Every query is scoped to the logged-in user; other users' records return 404. Interactive docs: `/docs`.
+## How the AI study plan works
 
-| Method & path | Purpose |
-|---|---|
-| `POST /auth/register` | Creates an unverified account and emails a code (no token yet) |
-| `POST /auth/verify-email` | `{email, code}` → `{access_token, user}` |
-| `POST /auth/resend-code` | `{email}` → new verification code (once per 60 s) |
-| `POST /auth/login` | `{access_token, user}`; 403 `email_not_verified` until verified |
-| `POST /auth/forgot-password` | `{email}` → emails a reset code (same response whether or not the account exists) |
-| `POST /auth/reset-password` | `{email, code, new_password}` → `{access_token, user}` |
-| `GET/PATCH /auth/me` | Current user; update name / timezone |
-| `POST /auth/change-password` | `{current_password, new_password}` → fresh token, other sessions logged out |
-| `GET/POST /subjects`, `GET/PATCH/DELETE /subjects/{id}` | Subjects (GET includes nested topics) |
-| `GET/POST /subjects/{id}/topics`, `PATCH/DELETE /topics/{id}` | Topics (empty PATCH body toggles status) |
-| `GET /exams?upcoming=true`, `POST /exams`, `PATCH/DELETE /exams/{id}` | Exams sorted by date |
-| `GET/PUT /preferences` | Daily minutes, study days, goal note |
-| `GET /tasks?date=YYYY-MM-DD`, `POST /tasks`, `PATCH/DELETE /tasks/{id}`, `PATCH /tasks/{id}/status` | Study tasks |
-| `GET /marks?subject_id=`, `POST /marks`, `PATCH/DELETE /marks/{id}` | Assessment marks |
-| `GET /dashboard/summary` | Stats for the dashboard |
-| `POST /ai/generate-plan` | `{start_date, end_date}` → validated plan **preview** (nothing saved) |
-| `POST /ai/save-plan` | Saves a previewed plan; replaces only *pending AI* tasks in that range |
+On **My Study Plan**, set how many minutes a day you can study, which days, and your goal. Then click
+**Generate AI Plan** and pick a date range. The app sends Gemini your subjects, unfinished topics, upcoming
+exams, weak subjects and the free time left on each day. It asks for a plan that puts nearer exams and weaker
+subjects first and never goes over your daily limit.
 
-## Deployment
+The answer is checked before you see it. Anything that doesn't match your subjects, lands on a day off, or
+doesn't fit in the time available is left out, and the preview tells you what was skipped. Nothing is saved
+until you click **Save**. Generating a new plan for the same dates only replaces earlier AI tasks you haven't
+done yet. Your own tasks and anything you've completed are never touched.
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the step-by-step guide and the list of accounts/keys needed.
+## Accounts and email
+
+New accounts get a 6-digit code by email and need to enter it before they can log in. Addresses on domains
+that can't receive mail, and throwaway inboxes like mailinator, are turned away at sign-up. The same kind of
+code is used for "Forgot password". Codes expire after 10 minutes, and login and sign-up attempts are
+rate-limited. Changing or resetting a password signs you out everywhere else.
+
+## Tests
+
+```bash
+cd backend && pytest
+cd frontend && npm test
+```
+
+The backend tests use an in-memory database. To run them against PostgreSQL instead, set
+`TEST_DATABASE_URL` to an empty test database.
+
+## Project structure
+
+```text
+backend/
+  app/
+    core/        settings, database, security, rate limiting
+    models/      database tables
+    schemas/     request and response shapes
+    routers/     API endpoints
+    services/    business logic, Gemini and email
+  alembic/       database migrations
+  tests/
+frontend/
+  src/
+    api/         API client
+    components/  shared UI pieces
+    context/     login state and notifications
+    pages/       one file per screen
+docs/            design mockup
+render.yaml      backend hosting config (Render)
+```
