@@ -36,7 +36,6 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
 alembic upgrade head
 python -m app.seed          # optional: adds a demo account with sample data
 uvicorn app.main:app --reload
@@ -44,8 +43,9 @@ uvicorn app.main:app --reload
 
 The API runs at <http://localhost:8000>, and you can browse every endpoint at <http://localhost:8000/docs>.
 
-The default `.env` works as it is for local development. It uses a SQLite file instead of PostgreSQL, and
-instead of sending emails it prints verification and reset codes in the terminal where the backend is running.
+You don't need any settings to run it locally. Without a `backend/.env` it uses a SQLite file instead of
+PostgreSQL, and instead of sending emails it prints verification and reset codes in the terminal where the
+backend is running.
 
 ### Frontend
 
@@ -67,8 +67,8 @@ resets the demo data. Don't run it against a production database.
 
 ## Configuration
 
-The backend reads its settings from `backend/.env`. `backend/.env.example` lists all of them with comments;
-these are the ones that matter most:
+The backend reads its settings from `backend/.env` (or from environment variables on the server). The file
+isn't committed, so create it yourself. These are the settings that matter most:
 
 | Setting | What it's for |
 | --- | --- |
