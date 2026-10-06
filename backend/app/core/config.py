@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     gemini_api_key: str = ""
     gemini_model: str = ""
+    gemini_fallback_model: str = ""  # optional: tried once when the main model is busy
 
     # Outgoing email (verification and password-reset codes).
     #   console = print codes in the server log (local development only)

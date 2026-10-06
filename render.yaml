@@ -33,4 +33,6 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        sync: false
+        value: gemini-3.5-flash
+      - key: GEMINI_FALLBACK_MODEL     # tried once if the main model is busy
+        value: gemini-3.1-flash-lite

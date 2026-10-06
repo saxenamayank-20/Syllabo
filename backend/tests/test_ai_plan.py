@@ -176,3 +176,32 @@ def test_not_configured_returns_503(client: TestClient, setup: dict, monkeypatch
         headers=setup["headers"],
     )
     assert res.status_code == 503
+
+
+def test_busy_model_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    from google.genai import errors
+
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "gemini_api_key", "key")
+    monkeypatch.setattr(settings, "gemini_model", "main-model")
+    monkeypatch.setattr(settings, "gemini_fallback_model", "backup-model")
+    calls: list[str] = []
+
+    def fake_generate(client, model: str, prompt: str) -> str:
+        calls.append(model)
+        if model == "main-model":
+            raise errors.APIError(503, {"error": {"message": "high demand", "status": "UNAVAILABLE"}})
+        return '{"days": []}'
+
+    monkeypatch.setattr(gemini_service, "_generate", fake_generate)
+    monkeypatch.setattr(gemini_service, "_client", object())
+    assert gemini_service.__dict__["generate_json"]("prompt") == '{"days": []}'
+    assert calls == ["main-model", "backup-model"]
+
+    # Both busy -> friendly "busy" error
+    monkeypatch.setattr(gemini_service, "_generate", lambda c, m, p: (_ for _ in ()).throw(
+        errors.APIError(429, {"error": {"message": "quota", "status": "RESOURCE_EXHAUSTED"}})))
+    with pytest.raises(gemini_service.AIRateLimitError):
+        gemini_service.__dict__["generate_json"]("prompt")
