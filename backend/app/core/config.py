@@ -2,6 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -37,6 +38,12 @@ class Settings(BaseSettings):
     # Login/sign-up attempts allowed per client IP per window (in-memory, per server process).
     auth_rate_limit: int = 10
     auth_rate_window_seconds: int = 300
+
+    @field_validator("jwt_secret")
+    @classmethod
+    def blank_secret_uses_dev_default(cls, value: str) -> str:
+        # An empty JWT_SECRET= line in .env shouldn't produce an empty signing key.
+        return value.strip() or DEFAULT_JWT_SECRET
 
     @property
     def sqlalchemy_url(self) -> str:
