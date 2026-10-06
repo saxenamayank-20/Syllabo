@@ -18,11 +18,11 @@ Full-stack app: FastAPI + SQLAlchemy backend, React (Vite) + Tailwind frontend, 
 ## Project layout
 
 ```
-studyai/
-  backend/        FastAPI app, Alembic migrations, tests, seed script
-  frontend/       React (Vite) + Tailwind app
-  docs/           UI mockup, deployment guide
-  render.yaml     Render Blueprint for the backend
+backend/            FastAPI app, Alembic migrations, tests, seed script
+frontend/           React (Vite) + Tailwind app
+docs/               UI mockup, deployment guide
+render.yaml         Render Blueprint for the backend
+PROJECT_PROMPT.md   Original project specification
 ```
 
 ## Backend setup
