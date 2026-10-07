@@ -1,8 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { Bot, CalendarDays, NotebookPen } from 'lucide-react'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
-import ComingSoon from './pages/ComingSoon'
 import Dashboard from './pages/Dashboard'
 import ForgotPassword from './pages/ForgotPassword'
 import Login from './pages/Login'
@@ -26,9 +24,6 @@ export default function App() {
           <Route path="study-plan" element={<StudyPlan />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="performance" element={<Performance />} />
-          <Route path="assistant" element={<ComingSoon title="AI Assistant" icon={Bot} />} />
-          <Route path="calendar" element={<ComingSoon title="Calendar" icon={CalendarDays} />} />
-          <Route path="notes" element={<ComingSoon title="Notes" icon={NotebookPen} />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>

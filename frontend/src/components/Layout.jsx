@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
-  BarChart3, Bell, BookOpen, Bot, CalendarDays, ClipboardList, LayoutDashboard, LogOut, Menu,
-  NotebookPen, Search, Settings, X,
+  BarChart3, Bell, BookOpen, ClipboardList, LayoutDashboard, LogOut, Menu, Search, Settings, X,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Logo from './Logo'
@@ -12,9 +11,6 @@ export const NAV_ITEMS = [
   { to: '/study-plan', label: 'My Study Plan', icon: ClipboardList },
   { to: '/subjects', label: 'Subjects', icon: BookOpen },
   { to: '/performance', label: 'Performance', icon: BarChart3 },
-  { to: '/assistant', label: 'AI Assistant', icon: Bot },
-  { to: '/calendar', label: 'Calendar', icon: CalendarDays },
-  { to: '/notes', label: 'Notes', icon: NotebookPen },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
