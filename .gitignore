@@ -11,3 +11,8 @@ __pycache__/
 # Node
 node_modules/
 dist/
+
+# Private notes (not for the repo)
+PROJECT_PROMPT.md
+REPORT_CONTEXT_PROMPT.md
+DEPLOYMENT.md
