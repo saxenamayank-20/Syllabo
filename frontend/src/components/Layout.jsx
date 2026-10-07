@@ -104,7 +104,7 @@ export default function Layout() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               className="input rounded-xl py-2.5 pl-9"
-              placeholder="Search subjects, topics or ask AI…"
+              placeholder="Search subjects or topics…"
               disabled
               title="Search is coming soon"
             />

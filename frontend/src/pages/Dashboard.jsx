@@ -112,7 +112,7 @@ function Recommendations({ summary }) {
   const hasMarks = summary.subject_performance.some((p) => p.avg_percentage != null)
   return (
     <div className="card p-5">
-      <CardHeader title="AI Recommendations" icon={Lightbulb} />
+      <CardHeader title="Recommendations" icon={Lightbulb} />
       {!hasMarks ? (
         <EmptyState icon={Lightbulb} title="No recommendations yet" hint="Add some marks to get suggestions." />
       ) : !weak.length ? (
