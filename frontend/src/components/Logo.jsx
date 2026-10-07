@@ -6,7 +6,7 @@ export default function Logo() {
       <GraduationCap className="h-9 w-9 text-slate-900" strokeWidth={2} />
       <div className="leading-tight">
         <p className="text-xl font-bold text-slate-900">
-          Study<span className="text-primary-600">AI</span>
+          Sylla<span className="text-primary-600">bo</span>
         </p>
         <p className="text-[11px] text-slate-500">Plan • Learn • Grow</p>
       </div>

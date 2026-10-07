@@ -20,12 +20,12 @@ CodePurpose = Literal["verify", "reset"]
 _COPY: dict[CodePurpose, tuple[str, str, str]] = {
     # purpose: (subject suffix, intro line, "ignore" line)
     "verify": (
-        "is your StudyAI verification code",
+        "is your Syllabo verification code",
         "Use this code to verify your email address:",
-        "If you didn't create a StudyAI account, you can ignore this email.",
+        "If you didn't create a Syllabo account, you can ignore this email.",
     ),
     "reset": (
-        "is your StudyAI password reset code",
+        "is your Syllabo password reset code",
         "Use this code to reset your password:",
         "If you didn't ask to reset your password, you can ignore this email — your password won't change.",
     ),
@@ -81,7 +81,7 @@ def send_code(to: str, name: str, code: str, expires_minutes: int, purpose: Code
     text = f"Hi {name},\n\n{intro} {code}\n\nIt expires in {expires_minutes} minutes. {ignore}"
     html = f"""\
 <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#1e293b">
-  <h2 style="color:#2563eb;margin-bottom:4px">StudyAI</h2>
+  <h2 style="color:#2563eb;margin-bottom:4px">Syllabo</h2>
   <p>Hi {html_lib.escape(name)},</p>
   <p>{intro}</p>
   <p style="font-size:32px;font-weight:bold;letter-spacing:8px;background:#eff6ff;padding:16px;text-align:center;border-radius:12px">{code}</p>

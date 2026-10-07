@@ -9,7 +9,7 @@ from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models import Exam, Mark, StudyPreference, StudyTask, Subject, Topic, User
 
-DEMO_EMAIL = "demo@studyai.app"
+DEMO_EMAIL = "demo@syllabo.app"
 DEMO_PASSWORD = "demo1234"
 DEMO_TIMEZONE = "Asia/Kolkata"
 

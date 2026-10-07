@@ -1,4 +1,4 @@
-# Render Blueprint for the StudyAI backend (New → Blueprint → pick this repo).
+# Render Blueprint for the Syllabo backend (New → Blueprint → pick this repo).
 # Values marked `sync: false` are asked for when the Blueprint is created.
 services:
   - type: web
@@ -20,7 +20,7 @@ services:
         generateValue: true
       - key: DATABASE_URL          # Neon connection string
         sync: false
-      - key: CORS_ORIGINS          # the Vercel URL, e.g. https://studyai.vercel.app
+      - key: CORS_ORIGINS          # the Vercel URL, e.g. https://syllabo.vercel.app
         sync: false
       - key: EMAIL_PROVIDER
         value: brevo
@@ -29,7 +29,7 @@ services:
       - key: EMAIL_FROM            # sender address verified in Brevo
         sync: false
       - key: EMAIL_FROM_NAME
-        value: StudyAI
+        value: Syllabo
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL

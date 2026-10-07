@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     #   smtp    = any SMTP server (Gmail, Brevo SMTP, SendGrid, ...)
     email_provider: Literal["console", "brevo", "smtp"] = "console"
     email_from: str = ""
-    email_from_name: str = "StudyAI"
+    email_from_name: str = "Syllabo"
     brevo_api_key: str = ""
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587

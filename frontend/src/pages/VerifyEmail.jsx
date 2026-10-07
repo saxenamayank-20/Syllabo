@@ -37,7 +37,7 @@ export default function VerifyEmail() {
     setError('')
     try {
       await verifyEmail(email, code)
-      toast.success('Email verified — welcome to StudyAI!')
+      toast.success('Email verified — welcome to Syllabo!')
       navigate('/', { replace: true })
     } catch (err) {
       setError(errorMessage(err))

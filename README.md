@@ -1,11 +1,11 @@
-# StudyAI
+# Syllabo
 
-StudyAI is a study planner for students. You add your subjects, topics, exams and marks, and it shows you where
+Syllabo is a study planner for students. You add your subjects, topics, exams and marks, and it shows you where
 you stand: what's on today, how many days are left until your next exam, how far through the syllabus you are,
 and which subjects need more attention. When you want a plan, it can put together a day-by-day study schedule
 with Google Gemini, built around your exams, your weak subjects and the time you actually have.
 
-![Dashboard](docs/mockup-dashboard.jpg)
+![Syllabo dashboard](docs/screenshot-dashboard.png)
 
 ## What it does
 
@@ -62,7 +62,7 @@ Then open <http://localhost:5173>.
 
 ### Demo account
 
-If you ran the seed script, log in with **demo@studyai.app** / **demo1234**. Running the seed script again
+If you ran the seed script, log in with **demo@syllabo.app** / **demo1234**. Running the seed script again
 resets the demo data. Don't run it against a production database.
 
 ## Configuration
