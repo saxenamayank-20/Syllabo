@@ -164,7 +164,7 @@ export default function StudyPlan() {
 
       <PlanSettings />
 
-      <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 text-sm" role="tablist">
+      <div className="inline-flex rounded-lg border border-slate-200 bg-surface p-1 text-sm" role="tablist">
         {[['upcoming', 'Upcoming'], ['all', 'All tasks']].map(([key, label]) => (
           <button key={key} role="tab" aria-selected={view === key} onClick={() => setView(key)}
             className={`rounded-md px-3 py-1.5 font-medium transition ${view === key ? 'bg-primary-600 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
@@ -189,7 +189,7 @@ export default function StudyPlan() {
             return (
               <section key={date} className="card p-5">
                 <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className={`font-semibold ${date === today ? 'text-primary-700' : 'text-slate-900'}`}>{formatDayHeading(date)}</h2>
+                  <h2 className={`font-semibold ${date === today ? 'text-primary-700 dark:text-primary-300' : 'text-slate-900'}`}>{formatDayHeading(date)}</h2>
                   <p className="text-xs text-slate-500">{done}/{list.length} done · {formatDuration(minutes)}</p>
                 </div>
                 <ul className="divide-y divide-slate-100">

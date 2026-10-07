@@ -1,8 +1,10 @@
 import Logo from './Logo'
+import ThemeToggle from './ThemeToggle'
 
 export default function AuthShell({ title, subtitle, children, footer }) {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-10">
+      <ThemeToggle className="absolute right-4 top-4" />
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Logo />

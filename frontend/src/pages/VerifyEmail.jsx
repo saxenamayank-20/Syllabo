@@ -65,9 +65,9 @@ export default function VerifyEmail() {
     <AuthShell
       title="Check your email"
       subtitle={location.state?.message && location.state.email_sent !== false ? location.state.message : `Enter the 6-digit code we sent to ${email}.`}
-      footer={<>Wrong email? <Link to="/register" className="font-medium text-primary-600 hover:underline">Register again</Link></>}
+      footer={<>Wrong email? <Link to="/register" className="font-medium text-primary-600 dark:text-primary-400 hover:underline">Register again</Link></>}
     >
-      <div className="mb-5 flex items-center gap-3 rounded-xl bg-primary-50 px-4 py-3 text-sm text-primary-700">
+      <div className="mb-5 flex items-center gap-3 rounded-xl bg-primary-50 dark:bg-primary-500/10 px-4 py-3 text-sm text-primary-700 dark:text-primary-300">
         <MailCheck className="h-5 w-5 shrink-0" />
         <span className="min-w-0 break-words">{email}</span>
       </div>
@@ -89,7 +89,7 @@ export default function VerifyEmail() {
           />
           <p className="mt-1 text-xs text-slate-500">The code expires in 10 minutes. Check your spam folder too.</p>
         </div>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         <button type="submit" className="btn-primary w-full" disabled={busy || code.length !== 6}>
           {busy && <Spinner className="h-4 w-4 text-white" />} Verify email
         </button>

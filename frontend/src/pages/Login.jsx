@@ -39,7 +39,7 @@ export default function Login() {
     <AuthShell
       title="Welcome back"
       subtitle="Log in to continue your study plan."
-      footer={<>Don&apos;t have an account? <Link to="/register" className="font-medium text-primary-600 hover:underline">Create one</Link></>}
+      footer={<>Don&apos;t have an account? <Link to="/register" className="font-medium text-primary-600 dark:text-primary-400 hover:underline">Create one</Link></>}
     >
       <form onSubmit={submit} className="space-y-4">
         <div>
@@ -50,12 +50,12 @@ export default function Login() {
         <div>
           <div className="flex items-center justify-between">
             <label className="label" htmlFor="password">Password</label>
-            <Link to="/forgot-password" className="mb-1 text-xs font-medium text-primary-600 hover:underline">Forgot password?</Link>
+            <Link to="/forgot-password" className="mb-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:underline">Forgot password?</Link>
           </div>
           <input id="password" type="password" required autoComplete="current-password" className="input"
             value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
         </div>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         <button type="submit" className="btn-primary w-full" disabled={busy}>
           {busy && <Spinner className="h-4 w-4 text-white" />} Log in
         </button>

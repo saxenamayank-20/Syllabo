@@ -14,7 +14,7 @@ export default function TaskItem({ task, busy, onToggle, onEdit, onDelete }) {
           <span aria-hidden>•</span>
           <span>{formatDuration(task.duration_mins)}</span>
           {task.source === 'ai' && (
-            <span className="ml-1 inline-flex items-center gap-0.5 rounded bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-700">
+            <span className="ml-1 inline-flex items-center gap-0.5 rounded bg-violet-50 dark:bg-violet-500/15 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:text-violet-300">
               <Sparkles className="h-3 w-3" /> AI
             </span>
           )}
@@ -29,7 +29,7 @@ export default function TaskItem({ task, busy, onToggle, onEdit, onDelete }) {
             </button>
           )}
           {onDelete && (
-            <button onClick={() => onDelete(task)} className="btn-ghost hover:text-red-600" aria-label={`Delete "${task.title}"`}>
+            <button onClick={() => onDelete(task)} className="btn-ghost hover:text-red-600 dark:hover:text-red-400" aria-label={`Delete "${task.title}"`}>
               <Trash2 className="h-4 w-4" />
             </button>
           )}

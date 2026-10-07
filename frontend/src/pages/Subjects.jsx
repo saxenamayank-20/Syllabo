@@ -123,7 +123,7 @@ function SubjectCard({ subject, onEdit, onDelete, onChanged }) {
         </div>
         <div className="flex shrink-0">
           <button className="btn-ghost" onClick={() => onEdit(subject)} aria-label={`Edit ${subject.name}`}><Pencil className="h-4 w-4" /></button>
-          <button className="btn-ghost hover:text-red-600" onClick={() => onDelete(subject)} aria-label={`Delete ${subject.name}`}><Trash2 className="h-4 w-4" /></button>
+          <button className="btn-ghost hover:text-red-600 dark:hover:text-red-400" onClick={() => onDelete(subject)} aria-label={`Delete ${subject.name}`}><Trash2 className="h-4 w-4" /></button>
         </div>
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
@@ -139,7 +139,7 @@ function SubjectCard({ subject, onEdit, onDelete, onChanged }) {
               <Checkbox checked={completed} disabled={busyTopic === topic.id} label={`Toggle ${topic.name}`}
                 onChange={() => run(topic.id, () => api.patch(`/topics/${topic.id}`))} />
               <span className={`flex-1 text-sm ${completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{topic.name}</span>
-              <button className="btn-ghost p-1 opacity-100 hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+              <button className="btn-ghost p-1 opacity-100 hover:text-red-600 dark:hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
                 aria-label={`Delete topic ${topic.name}`} onClick={() => run(topic.id, () => api.delete(`/topics/${topic.id}`))}>
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -287,7 +287,7 @@ function ExamsSection({ subjects }) {
                 <button className="btn-ghost" onClick={() => setEditing(exam)} aria-label={`Edit ${exam.title}`}>
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button className="btn-ghost -ml-2 hover:text-red-600" onClick={() => setDeleting(exam)} aria-label={`Delete ${exam.title}`}>
+                <button className="btn-ghost -ml-2 hover:text-red-600 dark:hover:text-red-400" onClick={() => setDeleting(exam)} aria-label={`Delete ${exam.title}`}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </li>

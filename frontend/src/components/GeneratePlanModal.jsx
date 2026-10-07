@@ -16,7 +16,7 @@ function Preview({ preview }) {
         (limit {preview.daily_study_minutes} min/day).
       </p>
       {preview.replaces_pending_ai_tasks > 0 && (
-        <p className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <p className="flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           Saving will replace {preview.replaces_pending_ai_tasks} pending AI task(s) already in this date range.
           Your manual and completed tasks are kept.
@@ -175,12 +175,12 @@ export default function GeneratePlanModal({ open, onClose, onSaved }) {
                 onChange={(e) => setRange({ ...range, end_date: e.target.value })} />
             </div>
           </div>
-          {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+          {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         </form>
       )}
       {preview && (
         <div className={generating ? 'pointer-events-none opacity-50' : ''}>
-          {error && <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+          {error && <p className="mb-3 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
           <Preview preview={preview} />
         </div>
       )}

@@ -12,13 +12,13 @@ import { useAuth } from '../context/AuthContext'
 import { formatLongDate, greeting, parseISODate, toISODate } from '../utils/date'
 
 const TONES = {
-  green: 'bg-emerald-50 text-emerald-600',
-  red: 'bg-red-50 text-red-500',
-  blue: 'bg-primary-50 text-primary-600',
-  amber: 'bg-amber-50 text-amber-500',
+  green: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  red: 'bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400',
+  blue: 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400',
+  amber: 'bg-amber-50 dark:bg-amber-500/10 text-amber-500 dark:text-amber-400',
 }
 
-function StatCard({ icon: Icon, tone, value, label, sub, subClass = 'text-emerald-600' }) {
+function StatCard({ icon: Icon, tone, value, label, sub, subClass = 'text-emerald-600 dark:text-emerald-400' }) {
   return (
     <div className="card flex flex-col items-start gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
       <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl sm:h-14 sm:w-14 ${TONES[tone]}`}>
@@ -35,7 +35,7 @@ function StatCard({ icon: Icon, tone, value, label, sub, subClass = 'text-emeral
 
 function ViewAll({ to, label = 'View All' }) {
   return (
-    <Link to={to} className="flex items-center gap-1 text-xs font-medium text-primary-600 hover:underline">
+    <Link to={to} className="flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:underline">
       {label} <ArrowRight className="h-3.5 w-3.5" />
     </Link>
   )
@@ -54,7 +54,7 @@ function StatCards({ summary }) {
       <StatCard
         icon={Target} tone="red" value={s.days_to_next_exam ?? '—'} label="Days to Exam"
         sub={s.next_exam ? s.next_exam.title : 'No upcoming exams'}
-        subClass={s.next_exam ? 'text-primary-600' : 'text-slate-400'}
+        subClass={s.next_exam ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400'}
       />
       <StatCard
         icon={BarChart3} tone="blue" value={`${Math.round(s.overall_progress)}%`} label="Overall Progress"
@@ -63,12 +63,12 @@ function StatCards({ summary }) {
             {progressUp && <ArrowUp className="h-3 w-3" />}+{s.progress_change_this_week}% this week
           </span>
         }
-        subClass={progressUp ? 'text-emerald-600' : 'text-slate-400'}
+        subClass={progressUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}
       />
       <StatCard
         icon={Trophy} tone="amber" value={s.current_grade ?? '—'} label="Current Grade"
         sub={s.current_grade ? (gradeGood ? 'Great work!' : 'Keep pushing!') : 'No marks yet'}
-        subClass={s.current_grade ? (gradeGood ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-400'}
+        subClass={s.current_grade ? (gradeGood ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400') : 'text-slate-400'}
       />
     </div>
   )
@@ -88,8 +88,8 @@ function UpcomingExams({ exams, loading }) {
             const d = parseISODate(exam.exam_date)
             return (
               <li key={exam.id} className="flex items-center gap-4 py-3">
-                <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-red-50 leading-none">
-                  <span className="text-[10px] font-semibold uppercase text-red-500">
+                <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10 leading-none">
+                  <span className="text-[10px] font-semibold uppercase text-red-500 dark:text-red-400">
                     {d.toLocaleDateString('en-GB', { month: 'short' })}
                   </span>
                   <span className="mt-0.5 text-lg font-bold text-slate-900">{String(d.getDate()).padStart(2, '0')}</span>
@@ -123,9 +123,9 @@ function Recommendations({ summary }) {
             <li key={s.subject_id}>
               <Link
                 to="/performance"
-                className="flex items-center gap-3 rounded-xl bg-emerald-50/70 p-3 transition hover:bg-emerald-50"
+                className="flex items-center gap-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-500/10 p-3 transition hover:bg-emerald-50 dark:hover:bg-emerald-500/15"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-emerald-600">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface text-emerald-600 dark:text-emerald-400">
                   <TrendingDown className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">

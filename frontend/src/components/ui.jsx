@@ -62,12 +62,12 @@ export function Modal({ open, title, onClose, children, footer, wide = false }) 
 
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-0 sm:items-center sm:p-4" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4" onMouseDown={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:rounded-2xl ${wide ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}
+        className={`max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-surface shadow-xl dark:ring-1 dark:ring-white/10 sm:rounded-2xl ${wide ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
@@ -113,7 +113,7 @@ export function Checkbox({ checked, onChange, disabled, label }) {
       disabled={disabled}
       onClick={onChange}
       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition disabled:opacity-50 ${
-        checked ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white hover:border-emerald-400'
+        checked ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-surface hover:border-emerald-400'
       }`}
     >
       {checked && (

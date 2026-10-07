@@ -66,7 +66,7 @@ export default function ForgotPassword() {
     }
   }
 
-  const footer = <>Remembered it? <Link to="/login" className="font-medium text-primary-600 hover:underline">Back to log in</Link></>
+  const footer = <>Remembered it? <Link to="/login" className="font-medium text-primary-600 dark:text-primary-400 hover:underline">Back to log in</Link></>
 
   if (step === 'email') {
     return (
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
             <input id="email" type="email" required autoComplete="email" className="input" value={email}
               onChange={(e) => setEmail(e.target.value)} />
           </div>
-          {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+          {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
           <button type="submit" className="btn-primary w-full" disabled={busy}>
             {busy && <Spinner className="h-4 w-4 text-white" />} Send reset code
           </button>
@@ -88,7 +88,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthShell title="Choose a new password" subtitle={`If an account exists for ${email}, we've emailed it a 6-digit code.`} footer={footer}>
-      <div className="mb-5 flex items-center gap-3 rounded-xl bg-primary-50 px-4 py-3 text-sm text-primary-700">
+      <div className="mb-5 flex items-center gap-3 rounded-xl bg-primary-50 dark:bg-primary-500/10 px-4 py-3 text-sm text-primary-700 dark:text-primary-300">
         <KeyRound className="h-5 w-5 shrink-0" />
         <span className="min-w-0 break-words">{email}</span>
       </div>
@@ -109,7 +109,7 @@ export default function ForgotPassword() {
           <input id="confirm-password" type="password" required minLength={6} maxLength={72} autoComplete="new-password" className="input"
             value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
         </div>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         <button type="submit" className="btn-primary w-full" disabled={busy || form.code.length !== 6}>
           {busy && <Spinner className="h-4 w-4 text-white" />} Reset password
         </button>

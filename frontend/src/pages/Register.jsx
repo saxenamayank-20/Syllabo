@@ -33,7 +33,7 @@ export default function Register() {
     <AuthShell
       title="Create your account"
       subtitle="Plan smarter, track progress and hit your targets."
-      footer={<>Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline">Log in</Link></>}
+      footer={<>Already have an account? <Link to="/login" className="font-medium text-primary-600 dark:text-primary-400 hover:underline">Log in</Link></>}
     >
       <form onSubmit={submit} className="space-y-4">
         <div>
@@ -51,7 +51,7 @@ export default function Register() {
             className="input" {...field('password')} />
           <p className="mt-1 text-xs text-slate-500">At least 6 characters.</p>
         </div>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         <button type="submit" className="btn-primary w-full" disabled={busy}>
           {busy && <Spinner className="h-4 w-4 text-white" />} Create account
         </button>

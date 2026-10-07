@@ -78,7 +78,7 @@ export default function PlanSettings({ defaultOpen = false }) {
                     return (
                       <button key={d} type="button" onClick={() => toggleDay(d)} aria-pressed={on}
                         className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                          on ? 'border-primary-600 bg-primary-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                          on ? 'border-primary-600 bg-primary-600 text-white' : 'border-slate-200 bg-surface text-slate-600 hover:bg-slate-50'
                         }`}>
                         {d}
                       </button>

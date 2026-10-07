@@ -66,7 +66,7 @@ function ProfileCard() {
           <p className="flex items-center gap-2 text-sm text-slate-700">
             {user.email}
             {user.email_verified && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
                 <BadgeCheck className="h-3.5 w-3.5" /> Verified
               </span>
             )}
@@ -80,7 +80,7 @@ function ProfileCard() {
           <p className="mt-1 text-xs text-slate-500">
             Decides what &quot;today&quot; means for your tasks and exam countdown.
             {!sameOffset(form.timezone, deviceZone) && (
-              <> <button type="button" className="font-medium text-primary-600 hover:underline"
+              <> <button type="button" className="font-medium text-primary-600 dark:text-primary-400 hover:underline"
                 onClick={() => setForm({ ...form, timezone: deviceZone })}>Use this device&apos;s timezone ({deviceZone})</button></>
             )}
           </p>
@@ -142,7 +142,7 @@ function PasswordCard() {
             <input id="pw-confirm" type="password" required minLength={6} maxLength={72} autoComplete="new-password" className="input" value={form.confirm} onChange={set('confirm')} />
           </div>
         </div>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
         <div className="flex justify-end">
           <button type="submit" className="btn-primary" disabled={busy}>
             {busy && <Spinner className="h-4 w-4 text-white" />} Change password

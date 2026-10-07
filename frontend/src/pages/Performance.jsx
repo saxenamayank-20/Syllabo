@@ -166,7 +166,7 @@ export default function Performance() {
                       <button className="btn-ghost" onClick={() => setEditing(m)} aria-label={`Edit ${m.assessment_name}`}>
                         <Pencil className="h-4 w-4" />
                       </button>
-                      <button className="btn-ghost hover:text-red-600" onClick={() => setDeleting(m)} aria-label={`Delete ${m.assessment_name}`}>
+                      <button className="btn-ghost hover:text-red-600 dark:hover:text-red-400" onClick={() => setDeleting(m)} aria-label={`Delete ${m.assessment_name}`}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </td>
