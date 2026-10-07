@@ -122,3 +122,15 @@ def test_production_settings_are_checked() -> None:
         brevo_api_key="key", email_from="team@client.com",
     )
     assert ok.production_problems() == []
+
+
+@pytest.mark.parametrize("raw", [
+    "https://a.vercel.app,https://b.vercel.app",
+    '"https://a.vercel.app, https://b.vercel.app/"',
+    "https://a.vercel.app\nhttps://b.vercel.app",
+    "https://a.vercel.app; https://b.vercel.app",
+])
+def test_cors_origins_tolerate_pasting_mistakes(raw: str) -> None:
+    assert Settings(_env_file=None, cors_origins=raw).cors_origin_list == [
+        "https://a.vercel.app", "https://b.vercel.app",
+    ]

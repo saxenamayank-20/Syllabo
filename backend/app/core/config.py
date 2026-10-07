@@ -1,3 +1,4 @@
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -60,7 +61,14 @@ class Settings(BaseSettings):
 
     @property
     def cors_origin_list(self) -> list[str]:
-        return [o.strip().rstrip("/") for o in self.cors_origins.split(",") if o.strip()]
+        """Allowed frontend origins. Forgiving about how the value was pasted: commas, semicolons,
+        spaces or new lines between entries, surrounding quotes and trailing slashes are all fine."""
+        origins = []
+        for raw in re.split(r"[,;\s]+", self.cors_origins):
+            origin = raw.strip().strip("\"'").rstrip("/")
+            if origin:
+                origins.append(origin)
+        return origins
 
     @property
     def sender_address(self) -> str:
