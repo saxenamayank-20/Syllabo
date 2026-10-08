@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Neutral palette as RGB channels. Light values are Tailwind's slate scale; dark mode inverts it so
-     "slate-900" stays the strongest text and "slate-50"/"slate-100" stay the subtlest fills. */
+  /* grey scale as rgb values. dark mode flips it, so slate-900 is still the strongest text */
   :root {
     color-scheme: light;
     --canvas: 245 247 251;

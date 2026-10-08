@@ -21,7 +21,7 @@ const taskToForm = (t) => ({
   duration_mins: t.duration_mins,
 })
 
-/** Add a task, or edit `task` when given. */
+// add a task, or edit one if `task` is passed
 function TaskModal({ open, task, subjects, onClose, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(emptyTask)
@@ -134,7 +134,7 @@ export default function StudyPlan() {
       if (!map.has(t.scheduled_date)) map.set(t.scheduled_date, [])
       map.get(t.scheduled_date).push(t)
     }
-    // Within a day keep chronological order even in the "past" (newest day first) view
+    // newest day first, but keep times in order within a day
     return [...map.entries()].map(([date, list]) => [date, view === 'upcoming' ? list : list.reverse()])
   }, [tasks.data, view, today])
 

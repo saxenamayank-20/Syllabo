@@ -2,7 +2,7 @@ import { useState } from 'react'
 import api, { errorMessage } from './client'
 import { useToast } from '../context/ToastContext'
 
-/** Toggle a task's status with an optimistic update. `setTasks` updates the local list. */
+// toggle a task, update the list first and undo if the request fails
 export function useTaskToggle(setTasks, onChanged) {
   const toast = useToast()
   const [busyId, setBusyId] = useState(null)

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/ai", tags=["ai"])
 def generate_plan(
     data: GeneratePlanRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> PlanPreview:
-    """Ask Gemini for a plan and return a validated preview. Nothing is saved yet."""
+    """get a plan from gemini and return a checked preview, nothing saved yet"""
     return plan_service.generate_preview(db, user, data)
 
 
@@ -22,5 +22,5 @@ def generate_plan(
 def save_plan(
     data: SavePlanRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> SavePlanResponse:
-    """Save a previewed plan. Replaces only pending AI tasks in the same date range."""
+    """save the plan, only replaces pending ai tasks in that range"""
     return plan_service.save_plan(db, user, data)

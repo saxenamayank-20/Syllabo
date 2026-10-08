@@ -69,7 +69,7 @@ function Preview({ preview }) {
   )
 }
 
-/** Date range → Gemini preview → Save / Regenerate / Cancel. Gemini is only called on button click. */
+// pick dates -> preview -> save / regenerate / cancel. gemini only runs on click
 export default function GeneratePlanModal({ open, onClose, onSaved }) {
   const toast = useToast()
   const [range, setRange] = useState(defaultRange)

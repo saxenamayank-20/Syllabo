@@ -1,11 +1,11 @@
-"""Reject email addresses that can't belong to a real, reachable inbox."""
+"""block emails that can't be a real inbox"""
 
 import email_validator
 from fastapi import HTTPException, status
 
 from app.core.config import get_settings
 
-# Common throwaway-inbox providers. Not exhaustive, but it covers the usual suspects.
+# common throwaway inboxes, not all of them but the usual ones
 DISPOSABLE_DOMAINS = frozenset({
     "10minutemail.com", "10minutemail.net", "20minutemail.com", "33mail.com", "anonaddy.me",
     "burnermail.io", "discard.email", "dispostable.com", "emailondeck.com", "fakeinbox.com",
@@ -25,7 +25,7 @@ def _bad_email(message: str) -> HTTPException:
 
 
 def validate_real_email(email: str) -> str:
-    """Return the normalised address, or raise 422 if it's disposable or its domain can't receive mail."""
+    """clean up the address, 422 if it's disposable or the domain can't get mail"""
     try:
         result = email_validator.validate_email(
             email, check_deliverability=get_settings().email_check_deliverability, timeout=8

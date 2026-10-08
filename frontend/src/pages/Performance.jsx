@@ -17,7 +17,7 @@ const markToForm = (m) => ({
   assessment_date: m.assessment_date,
 })
 
-/** Add a mark, or edit `mark` when given. */
+// add a mark, or edit one if `mark` is passed
 function MarkForm({ subjects, mark, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(() => (mark ? markToForm(mark) : emptyMark()))

@@ -14,7 +14,7 @@ if _url.startswith("sqlite"):
 
     @event.listens_for(engine, "connect")
     def _enable_sqlite_foreign_keys(dbapi_connection, _record) -> None:  # type: ignore[no-untyped-def]
-        # SQLite ignores FK constraints (and ON DELETE cascades) unless enabled per connection.
+        # sqlite ignores foreign keys (and cascades) unless this is on
         dbapi_connection.execute("PRAGMA foreign_keys=ON")
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 

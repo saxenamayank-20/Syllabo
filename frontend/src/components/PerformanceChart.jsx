@@ -4,7 +4,7 @@ import { BarChart3 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { EmptyState } from './ui'
 
-// Mark pairs validated with the dataviz palette check against each theme's card surface.
+// chart colours per theme (checked for contrast and colour blindness)
 const CHART_COLORS = {
   light: { marks: '#2563eb', target: '#d97706', grid: '#eef2f7', axis: '#e2e8f0', tick: '#475569', tickMuted: '#64748b', label: '#334155', cursor: '#f1f5f9' },
   dark: { marks: '#3b82f6', target: '#d97706', grid: '#1e293b', axis: '#2b3750', tick: '#aab6c8', tickMuted: '#94a3b8', label: '#c6cfdc', cursor: '#172036' },
@@ -57,7 +57,7 @@ function useIsNarrow(query = '(max-width: 640px)') {
   return narrow
 }
 
-/** Grouped bars: average mark % vs target % per subject. `data` is dashboard subject_performance. */
+// marks vs target bars per subject
 export default function PerformanceChart({ data, height = 260 }) {
   const narrow = useIsNarrow()
   const colors = useChartColors()
@@ -77,7 +77,7 @@ export default function PerformanceChart({ data, height = 260 }) {
             axisLine={{ stroke: colors.axis }}
             tick={{ fontSize: 12, fill: colors.tick }}
             interval={0}
-            // Subject names collide on phones; abbreviate there (the tooltip shows the full name).
+            // shorten names on phones, tooltip has the full one
             tickFormatter={(name) => (narrow && name.length > 5 ? `${name.slice(0, 4)}.` : name)}
           />
           <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: colors.tickMuted }} />

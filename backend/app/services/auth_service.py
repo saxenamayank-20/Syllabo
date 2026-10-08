@@ -37,7 +37,7 @@ def _now() -> datetime:
 
 
 def _aware(dt: datetime) -> datetime:
-    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)  # SQLite drops tzinfo
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)  # sqlite drops tzinfo
 
 
 def _hash_code(user_id: int, purpose: str, code: str) -> str:
@@ -64,7 +64,7 @@ def _cooldown_left(record: AuthCode | None) -> timedelta:
 
 
 def _issue_code(db: Session, user: User, purpose: CodePurpose) -> bool:
-    """Create (or replace) the user's code for `purpose` and email it. Returns False if sending failed."""
+    """make a new code and email it. False if the email didn't go out"""
     code = f"{secrets.randbelow(1_000_000):06d}"
     record = _get_code(db, user, purpose) or AuthCode(user_id=user.id, purpose=purpose)
     record.code_hash = _hash_code(user.id, purpose, code)
@@ -81,7 +81,7 @@ def _issue_code(db: Session, user: User, purpose: CodePurpose) -> bool:
 
 
 def _consume_code(db: Session, user: User, purpose: CodePurpose, code: str) -> None:
-    """Check a submitted code; on success delete it, otherwise count the attempt and raise."""
+    """check the code. right = delete it, wrong = count the attempt"""
     record = _get_code(db, user, purpose)
     if record is None or _aware(record.expires_at) <= _now():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "This code has expired. Please request a new one.")
@@ -108,7 +108,7 @@ def _code_sent(user: User, sent: bool) -> CodeSent:
     return CodeSent(email=user.email, email_sent=sent, message=message)
 
 
-# --- Sign-up & verification -----------------------------------------------------
+# signup + verification
 
 def register(db: Session, data: RegisterRequest) -> CodeSent:
     email = validate_real_email(data.email)
@@ -137,7 +137,7 @@ def verify_email(db: Session, data: VerifyEmailRequest) -> TokenResponse:
 def resend_verification(db: Session, data: EmailRequest) -> CodeSent:
     user = _find_user(db, data.email)
     if user is None or user.email_verified:
-        # Don't reveal whether an account exists or its state.
+        # don't leak whether the account exists
         return CodeSent(
             email=data.email, email_sent=True,
             message="If this email has an unverified account, a new code has been sent.",
@@ -156,7 +156,7 @@ def login(db: Session, data: LoginRequest) -> TokenResponse:
     if user is None or not verify_password(data.password, user.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")
     if not user.email_verified:
-        # Send a fresh code if the old one has expired, so the user isn't stuck.
+        # old code expired, send a new one so they aren't stuck
         record = _get_code(db, user, "verify")
         if record is None or _aware(record.expires_at) <= _now():
             _issue_code(db, user, "verify")
@@ -167,7 +167,7 @@ def login(db: Session, data: LoginRequest) -> TokenResponse:
     return _token_response(user)
 
 
-# --- Password reset ---------------------------------------------------------------
+# password reset
 
 def forgot_password(db: Session, data: EmailRequest) -> CodeSent:
     generic = CodeSent(
@@ -194,13 +194,13 @@ def reset_password(db: Session, data: ResetPasswordRequest) -> TokenResponse:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "This code has expired. Please request a new one.")
     _consume_code(db, user, "reset", data.code)
     user.password_hash = hash_password(data.new_password)
-    user.token_version += 1  # log out every existing session
-    user.email_verified = True  # receiving the code proves they own the inbox
+    user.token_version += 1  # logs out every session
+    user.email_verified = True  # they got the code, so the inbox is theirs
     db.commit()
     return _token_response(user)
 
 
-# --- Account settings ---------------------------------------------------------------
+# account settings
 
 def update_profile(db: Session, user: User, data: ProfileUpdate) -> User:
     if data.name is not None:
@@ -218,6 +218,6 @@ def change_password(db: Session, user: User, data: ChangePasswordRequest) -> Tok
     if data.current_password == data.new_password:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "The new password must be different")
     user.password_hash = hash_password(data.new_password)
-    user.token_version += 1  # other devices are logged out; this one gets a fresh token
+    user.token_version += 1  # other devices get logged out, this one gets a new token
     db.commit()
     return _token_response(user)

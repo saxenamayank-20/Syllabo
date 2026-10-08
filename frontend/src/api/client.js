@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const TOKEN_KEY = 'studyai_token'
 
-// Token lives in memory for fast access and in localStorage to survive reloads.
+// token in memory + localStorage so it survives a reload
 let accessToken = localStorage.getItem(TOKEN_KEY)
 let onUnauthorized = () => {}
 
@@ -42,7 +42,7 @@ api.interceptors.response.use(
   },
 )
 
-/** Turn an axios error into a human-readable message. */
+// axios error -> readable message
 export function errorMessage(error, fallback = 'Something went wrong. Please try again.') {
   if (!error?.response) return 'Cannot reach the server. It may be waking up — please try again in a few seconds.'
   const detail = error.response.data?.detail
@@ -62,7 +62,7 @@ export function errorMessage(error, fallback = 'Something went wrong. Please try
 
 export default api
 
-/** True when the API refused login because the email address isn't verified yet. */
+// login refused because the email isn't verified yet
 export function isEmailNotVerified(error) {
   return error?.response?.status === 403 && error.response.data?.detail?.code === 'email_not_verified'
 }

@@ -73,12 +73,12 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen">
-      {/* Desktop sidebar */}
+      {/* desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-100 lg:block">
         <Sidebar />
       </aside>
 
-      {/* Mobile drawer */}
+      {/* mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
@@ -100,7 +100,7 @@ export default function Layout() {
           <button onClick={() => setMobileOpen(true)} className="btn-ghost -ml-2 lg:hidden" aria-label="Open menu">
             <Menu className="h-5 w-5" />
           </button>
-          {/* Search and notifications are visual only for now (out of scope for this phase). */}
+          {/* search and notifications don't do anything yet */}
           <div className="relative ml-auto w-full max-w-md">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input

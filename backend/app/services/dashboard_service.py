@@ -26,7 +26,7 @@ def _percent(part: int, whole: int) -> float:
 
 
 def _as_aware(dt: datetime) -> datetime:
-    # SQLite returns naive datetimes; values are stored in UTC.
+    # sqlite drops the timezone, values are utc
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 

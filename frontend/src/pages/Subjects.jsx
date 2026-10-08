@@ -168,7 +168,7 @@ const examToForm = (e) => ({
   syllabus: e.syllabus,
 })
 
-/** Add an exam, or edit `exam` when given. */
+// add an exam, or edit one if `exam` is passed
 function ExamModal({ open, exam, subjects, onClose, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(emptyExam)

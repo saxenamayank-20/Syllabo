@@ -7,7 +7,7 @@ import { LoadingBlock, Spinner } from './ui'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-/** Study preferences used by the AI planner: daily minutes, study days, goal. */
+// study settings the ai plan uses
 export default function PlanSettings({ defaultOpen = false }) {
   const toast = useToast()
   const prefs = useApi('/preferences')

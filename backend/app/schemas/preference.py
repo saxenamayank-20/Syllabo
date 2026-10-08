@@ -19,7 +19,7 @@ class PreferenceUpdate(BaseModel):
             raise ValueError(f"Invalid day(s): {', '.join(invalid)}. Use {', '.join(VALID_DAYS)}")
         if not days:
             raise ValueError("Choose at least one study day")
-        # Keep canonical week order, drop duplicates
+        # week order, no duplicates
         return ",".join(d for d in VALID_DAYS if d in days)
 
 

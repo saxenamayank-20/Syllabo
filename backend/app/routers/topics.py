@@ -17,7 +17,7 @@ def update_topic(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> Topic:
-    """Toggle a topic's status (empty body), set it explicitly, or rename it."""
+    """empty body toggles the status, or set status/name"""
     return subject_service.update_topic(db, user, topic_id, data)
 
 

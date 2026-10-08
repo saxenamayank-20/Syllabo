@@ -1,8 +1,4 @@
-"""Simple in-memory sliding-window rate limiting for auth endpoints.
-
-Limits are per server process. That's enough for a single Render instance; a multi-instance
-deployment would need a shared store such as Redis.
-"""
+"""simple in-memory rate limit for the auth routes. fine for one render instance, more would need redis"""
 
 import time
 from collections import defaultdict, deque
@@ -23,7 +19,7 @@ def reset() -> None:
 
 
 def rate_limit(bucket: str) -> Callable[[Request], None]:
-    """FastAPI dependency: at most AUTH_RATE_LIMIT calls per client IP per window, per bucket."""
+    """max AUTH_RATE_LIMIT calls per ip per window, per bucket"""
 
     def dependency(request: Request) -> None:
         settings = get_settings()

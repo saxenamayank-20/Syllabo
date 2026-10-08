@@ -21,7 +21,7 @@ from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Separate buckets so e.g. typing a wrong code doesn't block logging in.
+# separate buckets so wrong codes don't block logging in
 login_limit = Depends(rate_limit("login"))
 code_limit = Depends(rate_limit("code"))
 send_limit = Depends(rate_limit("send"))
@@ -31,7 +31,7 @@ send_limit = Depends(rate_limit("send"))
     "/register", response_model=CodeSent, status_code=status.HTTP_201_CREATED, dependencies=[send_limit]
 )
 def register(data: RegisterRequest, db: Session = Depends(get_db)) -> CodeSent:
-    """Create an unverified account and email a 6-digit code. No token until the email is verified."""
+    """make an unverified account and email a code. no token until it's verified"""
     return auth_service.register(db, data)
 
 
@@ -52,13 +52,13 @@ def login(data: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
 
 @router.post("/forgot-password", response_model=CodeSent, dependencies=[send_limit])
 def forgot_password(data: EmailRequest, db: Session = Depends(get_db)) -> CodeSent:
-    """Email a password reset code (the response is the same whether or not the account exists)."""
+    """email a reset code (same reply whether the account exists or not)"""
     return auth_service.forgot_password(db, data)
 
 
 @router.post("/reset-password", response_model=TokenResponse, dependencies=[code_limit])
 def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)) -> TokenResponse:
-    """Set a new password using the emailed code. Logs out all other sessions."""
+    """new password from the emailed code, logs out other sessions"""
     return auth_service.reset_password(db, data)
 
 
@@ -78,5 +78,5 @@ def update_me(
 def change_password(
     data: ChangePasswordRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> TokenResponse:
-    """Change password; returns a fresh token and logs out other sessions."""
+    """change password, returns a new token and logs out other sessions"""
     return auth_service.change_password(db, user, data)

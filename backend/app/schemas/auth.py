@@ -19,7 +19,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     email: EmailStr
     password: str = Password
-    timezone: str = "UTC"  # the browser's zone; unknown values fall back to UTC rather than block sign-up
+    timezone: str = "UTC"  # browser's zone, unknown ones fall back to utc
 
     @field_validator("timezone")
     @classmethod
@@ -75,7 +75,7 @@ class TokenResponse(BaseModel):
 
 
 class CodeSent(BaseModel):
-    """Returned when a one-time code was (or may have been) emailed."""
+    """reply when a code was (or may have been) emailed"""
 
     email: EmailStr
     email_sent: bool

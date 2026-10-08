@@ -21,12 +21,10 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     gemini_api_key: str = ""
     gemini_model: str = ""
-    gemini_fallback_model: str = ""  # optional: tried once when the main model is busy
+    gemini_fallback_model: str = ""  # used if the main model is busy
 
-    # Outgoing email (verification and password-reset codes).
-    #   console = print codes in the server log (local development only)
-    #   brevo   = Brevo HTTP API (works on hosts that block SMTP, e.g. Render's free tier)
-    #   smtp    = any SMTP server (Gmail, Brevo SMTP, SendGrid, ...)
+    # email for the verify/reset codes
+    # console = just prints the code (local dev), brevo = http api (render free plan blocks smtp), smtp = gmail etc.
     email_provider: Literal["console", "brevo", "smtp"] = "console"
     email_from: str = ""
     email_from_name: str = "Syllabo"
@@ -37,19 +35,19 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     email_check_deliverability: bool = True
 
-    # Login/sign-up attempts allowed per client IP per window (in-memory, per server process).
+    # login/signup attempts per ip per window (kept in memory)
     auth_rate_limit: int = 10
     auth_rate_window_seconds: int = 300
 
     @field_validator("jwt_secret")
     @classmethod
     def blank_secret_uses_dev_default(cls, value: str) -> str:
-        # An empty JWT_SECRET= line in .env shouldn't produce an empty signing key.
+        # empty JWT_SECRET= in .env shouldn't mean an empty key
         return value.strip() or DEFAULT_JWT_SECRET
 
     @property
     def sqlalchemy_url(self) -> str:
-        """Resolved DB URL: falls back to local SQLite, and forces the psycopg v3 driver for Postgres."""
+        """sqlite if DATABASE_URL is empty, otherwise postgres with the psycopg driver"""
         url = self.database_url.strip()
         if not url:
             return f"sqlite:///{BACKEND_DIR / 'studyai.db'}"
@@ -61,8 +59,7 @@ class Settings(BaseSettings):
 
     @property
     def cors_origin_list(self) -> list[str]:
-        """Allowed frontend origins. Forgiving about how the value was pasted: commas, semicolons,
-        spaces or new lines between entries, surrounding quotes and trailing slashes are all fine."""
+        """allowed frontend urls. fine with commas, semicolons, spaces, quotes or trailing slashes"""
         origins = []
         for raw in re.split(r"[,;\s]+", self.cors_origins):
             origin = raw.strip().strip("\"'").rstrip("/")
@@ -75,7 +72,7 @@ class Settings(BaseSettings):
         return self.email_from or self.smtp_user
 
     def production_problems(self) -> list[str]:
-        """Settings that are fine for local dev but unsafe or broken in production."""
+        """things that are fine locally but not ok in production"""
         problems = []
         if self.jwt_secret == DEFAULT_JWT_SECRET or len(self.jwt_secret) < 32:
             problems.append("JWT_SECRET must be set to a random value of at least 32 characters")

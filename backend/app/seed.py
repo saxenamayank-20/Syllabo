@@ -1,4 +1,4 @@
-"""Create (or reset) a demo user with sample data. Run: python -m app.seed"""
+"""demo user with sample data. run: python -m app.seed"""
 
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -49,7 +49,7 @@ def seed() -> None:
     with SessionLocal() as db:
         existing = db.scalar(select(User).where(User.email == DEMO_EMAIL))
         if existing:
-            db.delete(existing)  # cascades to all of the demo user's data
+            db.delete(existing)  # cascade wipes the old demo data
             db.commit()
 
         user = User(
@@ -69,7 +69,7 @@ def seed() -> None:
         for name, color, target, topic_names in SUBJECTS:
             subject = Subject(user_id=user.id, name=name, color=color, target_score=target)
             for i, topic_name in enumerate(topic_names):
-                # Complete roughly the first half; a couple of them within the last week
+                # about half done, a couple of them this week
                 done = i < len(topic_names) // 2 + (1 if name == "Biology" else 0)
                 completed_at = now - timedelta(days=2 if i == 0 else 14 + i) if done else None
                 topic = Topic(

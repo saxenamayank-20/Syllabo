@@ -17,7 +17,7 @@ function savedTheme() {
   }
 }
 
-/** Light/dark theme: follows the device until the user picks one, then remembers the choice. */
+// follows the device until the user picks a theme, then remembers it
 export function ThemeProvider({ children }) {
   const [choice, setChoice] = useState(savedTheme)
   const [systemDark, setSystemDark] = useState(systemPrefersDark)
@@ -41,7 +41,7 @@ export function ThemeProvider({ children }) {
     try {
       localStorage.setItem(THEME_KEY, next)
     } catch {
-      // Private mode or blocked storage: the choice still applies for this visit.
+      // storage blocked (private mode), still works for this visit
     }
   }, [theme])
 

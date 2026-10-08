@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import api, { errorMessage } from './client'
 import { useToast } from '../context/ToastContext'
 
-/** GET `path` on mount (and whenever it changes). Returns { data, loading, error, reload, setData }. */
+// fetch `path` on mount, gives back { data, loading, error, reload, setData }
 export function useApi(path, initial = null) {
   const toast = useToast()
   const [data, setData] = useState(initial)

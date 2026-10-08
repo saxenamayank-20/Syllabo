@@ -9,7 +9,7 @@ function LocationProbe() {
   return <div data-testid="location">{location.pathname + location.search}</div>
 }
 
-/** Render `element` at `path` inside the app providers; a probe shows the current URL. */
+// render at `path` with the app providers, the probe shows the current url
 export function renderAt(path, element, { route = path.split('?')[0] } = {}) {
   return render(
     <ThemeProvider>

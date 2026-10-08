@@ -1,14 +1,14 @@
-# Render Blueprint for the Syllabo backend (New → Blueprint → pick this repo).
-# Values marked `sync: false` are asked for when the Blueprint is created.
+# render blueprint for the backend (new -> blueprint -> pick this repo)
+# render asks for the sync: false values when you create it
 services:
   - type: web
     name: studyai-api
     runtime: python
     plan: free
-    region: ohio            # same region as the Neon database (AWS us-east-2)
+    region: ohio            # same region as the neon db
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    # Migrations run on every start (pre-deploy commands need a paid plan).
+    # migrations run on every start, pre-deploy needs a paid plan
     startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
     healthCheckPath: /health
     envVars:
@@ -18,15 +18,15 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - key: DATABASE_URL          # Neon connection string
+      - key: DATABASE_URL          # neon connection string
         sync: false
-      - key: CORS_ORIGINS          # the Vercel URL, e.g. https://syllabo.vercel.app
+      - key: CORS_ORIGINS          # vercel url
         sync: false
       - key: EMAIL_PROVIDER
         value: brevo
       - key: BREVO_API_KEY
         sync: false
-      - key: EMAIL_FROM            # sender address verified in Brevo
+      - key: EMAIL_FROM            # sender verified in brevo
         sync: false
       - key: EMAIL_FROM_NAME
         value: Syllabo
@@ -34,5 +34,5 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: gemini-3.5-flash
-      - key: GEMINI_FALLBACK_MODEL     # tried once if the main model is busy
+      - key: GEMINI_FALLBACK_MODEL     # used if the main model is busy
         value: gemini-3.1-flash-lite

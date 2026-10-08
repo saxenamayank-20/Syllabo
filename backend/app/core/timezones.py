@@ -21,7 +21,7 @@ def is_valid_timezone(name: str) -> bool:
 
 
 def user_today(user: User) -> date:
-    """Today's date in the user's own timezone (falls back to UTC for unknown zones)."""
+    """today's date in the user's timezone (utc if the zone is unknown)"""
     try:
         zone = ZoneInfo(user.timezone)
     except (ZoneInfoNotFoundError, ValueError):

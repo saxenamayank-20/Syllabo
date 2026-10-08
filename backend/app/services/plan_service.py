@@ -1,4 +1,4 @@
-"""AI study plan generation: build the prompt, validate Gemini's answer, map it to real IDs, save."""
+"""ai study plan: build the prompt, check gemini's answer, map names to ids, save"""
 
 import json
 import logging
@@ -82,7 +82,7 @@ def _weekday(d: date) -> str:
 
 
 def _replaceable_filter(user: User, start: date, end: date) -> tuple:
-    """Previous AI tasks that a new plan for this range may replace: pending, AI-generated, in range."""
+    """old pending ai tasks in the range, these get replaced"""
     return (
         StudyTask.user_id == user.id,
         StudyTask.source == "ai",
@@ -110,7 +110,7 @@ def _load_context(db: Session, user: User, start: date, end: date) -> _Context:
             StudyTask.scheduled_date <= end,
         ).order_by(StudyTask.scheduled_date, StudyTask.start_time)
     ).all()
-    # Manual and completed tasks stay; pending AI tasks will be replaced.
+    # manual and done tasks stay, pending ai ones get replaced
     kept = [t for t in in_range if not (t.source == "ai" and t.status == "pending")]
     used: dict[date, int] = {}
     for t in kept:
@@ -173,13 +173,13 @@ def build_prompt(db: Session, user: User, ctx: _Context, start: date, end: date)
 
 def _parse_plan(text: str) -> AIPlan:
     cleaned = text.strip()
-    if cleaned.startswith("```"):  # tolerate fenced output despite instructions
+    if cleaned.startswith("```"):  # gemini sometimes wraps it in ``` anyway
         cleaned = cleaned.strip("`").removeprefix("json").strip()
     return AIPlan.model_validate(json.loads(cleaned))
 
 
 def _request_plan(prompt: str) -> AIPlan:
-    """Ask Gemini for a plan; retry once if the answer isn't valid JSON in the expected shape."""
+    """ask gemini for a plan, retry once if the json is bad"""
     last_error: Exception | None = None
     for attempt in (1, 2):
         try:
@@ -278,7 +278,7 @@ def generate_preview(db: Session, user: User, data: GeneratePlanRequest) -> Plan
 
 
 def _validate_for_save(data: SavePlanRequest, ctx: _Context) -> list[tuple[date, PlanTaskIn]]:
-    """Re-check a client-supplied plan: ownership, range, study days and daily minutes."""
+    """check the plan again before saving, the client could have changed it"""
     subjects = {s.id: s for s in ctx.subjects}
     remaining = dict(ctx.available)
     accepted: list[tuple[date, PlanTaskIn]] = []

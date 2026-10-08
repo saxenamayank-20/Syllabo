@@ -1,4 +1,4 @@
-"""Outgoing email: Brevo HTTP API, any SMTP server, or the console (local development)."""
+"""sends the code emails: brevo, smtp, or just the console locally"""
 
 import html as html_lib
 import logging
@@ -69,7 +69,7 @@ def _send_brevo(to: str, subject: str, text: str, html: str) -> None:
 
 
 def send_code(to: str, name: str, code: str, expires_minutes: int, purpose: CodePurpose) -> None:
-    """Email a one-time code. Raises EmailSendError if the provider fails."""
+    """email a code. raises EmailSendError if it fails"""
     settings = get_settings()
     if settings.email_provider == "console":
         logger.warning("DEV MODE (EMAIL_PROVIDER=console): %s code for %s is %s", purpose, to, code)

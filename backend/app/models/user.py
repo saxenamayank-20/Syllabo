@@ -18,15 +18,15 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     email_verified: Mapped[bool] = mapped_column(default=False, server_default=false())
-    # IANA zone (e.g. "Asia/Kolkata"); decides what "today" means for this user.
+    # e.g. "Asia/Kolkata", decides what "today" is for this user
     timezone: Mapped[str] = mapped_column(String(64), default="UTC", server_default="UTC")
-    # Bumped on password change/reset; tokens carrying an older version stop working.
+    # goes up on password change/reset, older tokens stop working
     token_version: Mapped[int] = mapped_column(default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class AuthCode(Base):
-    """A user's current one-time code for a purpose ('verify' email or 'reset' password)."""
+    """one-time code per user, for 'verify' or 'reset'"""
 
     __tablename__ = "auth_codes"
     __table_args__ = (UniqueConstraint("user_id", "purpose", name="uq_auth_codes_user_purpose"),)

@@ -19,7 +19,7 @@ SENT_CODES: dict[str, str] = {}  # last code emailed to each address (any purpos
 
 @pytest.fixture(autouse=True)
 def fake_email(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
-    """Capture verification codes instead of sending mail; skip DNS lookups."""
+    """catch the codes instead of sending mail, skip dns checks"""
     SENT_CODES.clear()
     rate_limit.reset()
     monkeypatch.setattr(get_settings(), "email_check_deliverability", False)
@@ -32,7 +32,7 @@ def fake_email(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
 
 
 def _test_engine() -> Engine:
-    """In-memory SQLite by default; set TEST_DATABASE_URL to run the suite against PostgreSQL."""
+    """in-memory sqlite, or postgres if TEST_DATABASE_URL is set"""
     if url := os.environ.get("TEST_DATABASE_URL"):
         return create_engine(Settings(_env_file=None, database_url=url).sqlalchemy_url)
     engine = create_engine(
@@ -65,7 +65,7 @@ def client() -> Generator[TestClient, None, None]:
 
 
 def register(client: TestClient, email: str = "student@gmail.com") -> dict[str, str]:
-    """Register and verify a user; return auth headers."""
+    """register + verify a user, returns auth headers"""
     res = client.post(
         "/auth/register", json={"name": "Test Student", "email": email, "password": "secret123"}
     )

@@ -19,7 +19,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.environment == "production" and (problems := settings.production_problems()):
         raise RuntimeError("Refusing to start in production:\n- " + "\n- ".join(problems))
     origins = settings.cors_origin_list
-    print(f"CORS allowed origins: {origins}", flush=True)  # visible in the Render log
+    print(f"CORS allowed origins: {origins}", flush=True)  # shows up in the render log
     if bad := [o for o in origins if not o.startswith(("http://", "https://"))]:
         logger.warning("CORS_ORIGINS entries must start with http:// or https:// - ignored by browsers: %s", bad)
     if settings.email_provider == "console":

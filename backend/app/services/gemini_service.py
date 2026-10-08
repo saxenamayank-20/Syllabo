@@ -1,4 +1,4 @@
-"""Thin wrapper around the Google Gemini SDK. Only called on explicit user action."""
+"""small wrapper around the gemini sdk. only runs when the user clicks generate"""
 
 import logging
 
@@ -11,7 +11,7 @@ logger = logging.getLogger("studyai.gemini")
 
 
 class AIError(Exception):
-    """Base class for AI failures; `message` is safe to show to users."""
+    """ai errors, message is ok to show the user"""
 
     def __init__(self, message: str) -> None:
         super().__init__(message)
@@ -32,11 +32,11 @@ class AIUnavailableError(AIError):
 
 _client: genai.Client | None = None
 
-BUSY_CODES = (429, 503)  # rate limit / model temporarily overloaded on Google's side
+BUSY_CODES = (429, 503)  # rate limited or google's model is overloaded
 
 
 def _get_client() -> tuple[genai.Client, list[str]]:
-    """The shared client and the models to try in order (main model, then the optional fallback)."""
+    """client + models to try (main, then fallback)"""
     global _client
     settings = get_settings()
     if not settings.gemini_api_key or not settings.gemini_model:
@@ -58,7 +58,7 @@ def _generate(client: genai.Client, model: str, prompt: str) -> str:
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
             temperature=0.4,
-            # We never pass tools, so skip the SDK's function-calling layer (and its log warning).
+            # no tools, so turn this off (stops a log warning)
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         ),
     )
@@ -66,10 +66,7 @@ def _generate(client: genai.Client, model: str, prompt: str) -> str:
 
 
 def generate_json(prompt: str) -> str:
-    """Send `prompt` to Gemini asking for a JSON-only response and return the raw text.
-
-    If the main model is busy, the fallback model (GEMINI_FALLBACK_MODEL) is tried once.
-    """
+    """ask gemini for json and return the raw text. tries the fallback model once if busy"""
     client, models = _get_client()
     for i, model in enumerate(models):
         try:

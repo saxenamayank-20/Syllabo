@@ -13,7 +13,7 @@ class TopicCreate(BaseModel):
 
 
 class TopicUpdate(BaseModel):
-    """Omit `status` to toggle pending <-> completed; pass it to set explicitly."""
+    """no status = toggle it"""
 
     name: str | None = Field(default=None, min_length=1, max_length=200)
     status: TopicStatus | None = None

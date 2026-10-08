@@ -9,7 +9,7 @@ from tests.conftest import register
 
 
 def next_weekday(weekday: int) -> date:
-    """Next date (after today) falling on `weekday` (Mon=0)."""
+    """next date after today on `weekday` (mon=0)"""
     d = date.today() + timedelta(days=1)
     while d.weekday() != weekday:
         d += timedelta(days=1)

@@ -39,7 +39,7 @@ def create_task(db: Session, user: User, data: TaskCreate) -> StudyTask:
 def update_task(db: Session, user: User, task_id: int, data: TaskUpdate) -> StudyTask:
     task = get_owned(db, StudyTask, task_id, user)
     changes = data.model_dump(exclude_unset=True)
-    # title/date/duration/subject can't be cleared; topic and start time can.
+    # title/date/duration/subject can't be cleared, topic and start time can
     for field in ("subject_id", "title", "scheduled_date", "duration_mins"):
         if changes.get(field, ...) is None:
             changes.pop(field)
@@ -49,7 +49,7 @@ def update_task(db: Session, user: User, task_id: int, data: TaskUpdate) -> Stud
     for field, value in changes.items():
         setattr(task, field, value)
     task.topic_id = topic_id
-    task.source = "manual"  # an edited AI task is the student's now; regenerating won't replace it
+    task.source = "manual"  # edited ai task counts as manual now, so regenerating won't wipe it
     db.commit()
     db.refresh(task)
     return task

@@ -1,4 +1,4 @@
-"""Lookup helpers that enforce per-user data scoping. Anything not owned by the user is a 404."""
+"""load things only if they belong to the user, otherwise 404"""
 
 from typing import TypeVar
 

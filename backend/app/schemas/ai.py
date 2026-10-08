@@ -22,7 +22,7 @@ class GeneratePlanRequest(PlanRange):
     pass
 
 
-# --- Shape Gemini must return -------------------------------------------------
+# what gemini has to return
 
 class AITask(BaseModel):
     subject: str = Field(min_length=1)
@@ -34,7 +34,7 @@ class AITask(BaseModel):
     @field_validator("start_time", mode="before")
     @classmethod
     def parse_hhmm(cls, value: object) -> object:
-        # Accept "HH:MM" (what we ask for) as well as "HH:MM:SS"
+        # accept "HH:MM" and "HH:MM:SS"
         if isinstance(value, str) and len(value.strip()) <= 5:
             return value.strip().zfill(5)
         return value
@@ -49,7 +49,7 @@ class AIPlan(BaseModel):
     days: list[AIDay]
 
 
-# --- Preview returned to the client, and what it sends back to save -------------
+# preview for the frontend, and what it sends back to save
 
 class PlanTaskIn(BaseModel):
     subject_id: int

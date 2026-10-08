@@ -17,7 +17,7 @@ function timeZoneOptions(current) {
   return [...new Set(['UTC', current, browserTimeZone(), ...zones])].filter(Boolean).sort()
 }
 
-/** True when two zone names currently share the same UTC offset (e.g. Asia/Calcutta vs Asia/Kolkata). */
+// same offset right now? (e.g. Asia/Calcutta vs Asia/Kolkata)
 function sameOffset(a, b) {
   const offset = (zone) => {
     try {

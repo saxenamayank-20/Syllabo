@@ -4,7 +4,7 @@ import pytest
 from app.core.config import get_settings
 from app.services import email_service
 
-# conftest replaces send_code for API tests; grab the real one for these unit tests.
+# conftest fakes send_code, so grab the real one here
 REAL_SEND = email_service.__dict__["send_code"]
 
 

@@ -98,7 +98,7 @@ def test_edit_task_and_mark(client: TestClient) -> None:
     body = res.json()
     assert body["title"] == "New" and body["duration_mins"] == 90 and body["start_time"] is None
     assert body["topic_id"] == tid
-    # Changing subject clears the (now mismatched) topic; a topic from another subject is rejected
+    # changing subject clears the topic, a topic from another subject is rejected
     assert client.patch(f"/tasks/{task['id']}", json={"subject_id": other}, headers=headers).json()["topic_id"] is None
     assert client.patch(f"/tasks/{task['id']}", json={"topic_id": tid}, headers=headers).status_code == 422
 
