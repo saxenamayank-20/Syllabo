@@ -73,8 +73,6 @@ python -m app.seed          # optional: demo account with sample data
 uvicorn app.main:app --reload
 ```
 
-The API runs at <http://localhost:8000> and every route is listed at <http://localhost:8000/docs>.
-
 It runs without any settings. With no `backend/.env` it uses a local SQLite file and prints the email codes in
 the terminal instead of sending them. To use real services, create `backend/.env` with these variables:
 
@@ -101,7 +99,7 @@ npm install
 npm run dev
 ```
 
-Then open <http://localhost:5173>. If you ran the seed script, log in with `demo@syllabo.app` / `demo1234`.
+If you ran the seed script, log in with `demo@syllabo.app` / `demo1234`.
 
 ## API routes
 
