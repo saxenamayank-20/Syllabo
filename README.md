@@ -2,8 +2,6 @@
 
 A study planner I built to help students keep their subjects, exams, marks and daily study tasks in one place.
 
-**Live:** <https://syllabo-app.vercel.app>
-
 ![Syllabo dashboard](docs/screenshot-dashboard.png)
 
 ## Why I built it
